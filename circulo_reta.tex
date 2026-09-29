@@ -1,0 +1,49 @@
+\begin{tikzpicture}[scale=1]
+
+% === Parâmetros ===
+\def\s{2}   % raio do círculo ao quadrado
+\def\a{1}   % coordenada dos interseptos
+
+\pgfmathsetmacro{\r}{sqrt(\s)} % raio do círculo
+
+  \begin{axis}[      
+      xlabel={$x$}, ylabel={$y$},
+      axis equal image,        % mantém escala x=y para círculos não ficarem ovalados
+      xmin=-1.2*\r, xmax=1.2*\r, ymin=-1.2*\r, ymax=1.2*\r,
+      xtick={-\a,0,\a,\r}, ytick={-\a,0,\a},
+      xticklabels={-\a,0,\a,$\sqrt{\s}$}, 
+      x tick label style={anchor=south west}, % rótulos abaixo e a esquerda do eixo X
+      y tick label style={anchor=south east}, % rótulos acima e a esquerda do eixo y
+      % width=8cm, height=6cm,
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+    ]
+
+    % --- Linhas Tracejadas ---
+     \addplot[Tracejado] coordinates {(-\a,0) (-\a,\a)};
+     \addplot[Tracejado] coordinates {(-\a,\a) (0,\a)};
+     \addplot[Tracejado] coordinates {(\a,0) (\a,-\a)};
+     \addplot[Tracejado] coordinates {(0,-\a) (\a,-\a)};
+
+    % --- Curvas ---
+
+    \draw[thick, blue] (axis cs:0,0) circle [radius=\r];    % Círculo de raio r
+
+    \addplot[name path=reta, domain=-1.1*\r:1.1*\r, samples=100, thick, red] {-x}node[pos=1, below, red] {$y=-x$};
+
+    % --- Região sombreada com Arc ---
+    \path[fill=gray!30, opacity=0.6]
+      (axis cs:\a,-\a)     % Ponto inicial, 
+      % necessário para o comando Arc a seguir.
+      % Se vc adicionar um "--" depois do ponto acima, 
+      % o "arc" não vai saber de onde começar
+      arc[start angle=-45, end angle=135, radius=\r] % Arco do ciclo
+      -- cycle;          % Conecta o ponto inicial ao final
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(-\a,\a) (\a,-\a) };
+
+
+  \end{axis}
+  
+\end{tikzpicture}

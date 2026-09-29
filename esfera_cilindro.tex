@@ -1,0 +1,58 @@
+\begin{tikzpicture}[scale=2]
+
+
+% === Parâmetros ===
+\def\r{3}   % raio do círculo
+\def\a{2}   % raio do cilindro
+
+% === Cálculos automáticos ===
+\pgfmathsetmacro{\yint}{sqrt(\r*\r - \a*\a)} % coordenada y de interseção
+\pgfmathtruncatemacro{\yintb}{\r*\r - \a*\a} % O que vai dentro da raiz, pra impressão
+\pgfmathsetmacro{\ang}{atan(\yint/\a)}       % ângulo correspondente
+
+
+  \begin{axis}[      
+      xlabel={$y$}, ylabel={$z$},   
+      axis equal image,             % mantém escala x=y para círculos não ficarem ovalados
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+      xmin=-1.2*\r, xmax=1.2*\r, ymin=-1.2*\r, ymax=1.2*\r,
+      % width=8cm, height=6cm,
+      xtick={-\r,-\a,0,\a,\r},
+      % xticklabels={-\r,-\a,0,\a,\r}
+      ytick={-\r,-\yint,0,\yint,\r}, 
+      yticklabels={-\r,$-\sqrt\yintb$,0,$-\sqrt\yintb$,\r},
+      x tick label style={anchor=north east}, % rótulos abaixo e a esquerda do eixo X
+      y tick label style={anchor=south east}, % rótulos acima e a esquerda do eixo y
+    ]
+
+    % --- Curvas ---
+
+    \draw[thick, blue] (axis cs:0,0) circle [radius=\r];    % Círculo de raio r
+
+    \addplot[thick, red, domain=-1.2*\r:1.2*\r] ({\a}, {x});      % Reta vertical x=a
+    \addplot[thick, red, domain=-1.2*\r:1.2*\r] ({-\a}, {x});     % Reta vertical x=-a
+
+    % --- Região sombreada com Plot ---
+    \path[fill=gray!30, opacity=0.6]
+      plot[domain=(180-\ang):\ang, samples=100] ({\r*cos(\x)},{\r*sin(\x)}) --
+      plot[domain=-\ang:-(180-\ang), samples=100] ({\r*cos(\x)},{\r*sin(\x)})
+      -- cycle;          % Conecta o ponto inicial ao final
+
+
+    % --- Linhas Tracejadas ---
+     \addplot[Tracejado] coordinates {(-\a,{-\yint}) (\a,{-\yint})};
+     \addplot[Tracejado] coordinates {(-\a,{\yint}) (\a,{\yint})};
+
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(-\a,{\yint})
+                                                        (-\a,{-\yint})
+                                                        (\a,{-\yint})
+                                                        (\a,{\yint})
+    };
+
+
+  \end{axis}
+  
+\end{tikzpicture}

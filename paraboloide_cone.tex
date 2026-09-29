@@ -1,0 +1,49 @@
+
+\begin{tikzpicture}[scale=2.3, line cap=round, line join=round, >=Stealth]
+
+
+  % ---  Linha pontilhada fina cinza claro entre pontos
+  \draw[Tracejado] (-1,0) -- (-1,1);
+  \draw[Tracejado] (1,0) -- (1,1);
+  \draw[Tracejado] (1,1) -- (-1,1);
+
+  % --- Região sombreada entre as curvas z = y^2 e z = |y| ---
+  \fill[gray!30, domain=-1:1, variable=\y]
+    % (-1,{abs(-1)})  % início (y=-1, z=|y|)
+    plot ({\y},{abs(\y)})            % parte superior z = |y|
+    -- plot[domain=1:-1] ({\y},{\y*\y}) % parte inferior z = y^2 (reverso)
+    -- cycle;
+
+  % --- Curvas delimitantes ---
+  % z = y^2 (parábola)
+  \draw[thick, blue, variable=\y] plot[domain=-1.2:1.2, samples=100] ({\y},{\y*\y});
+
+  % z = |y| (cone no plano x=0)
+  \draw[thick, red, variable=\y] plot[domain=-1.2:0, samples=2] ({\y},{- \y});
+  \draw[thick, red, variable=\y] plot[domain=0:1.2, samples=2] ({\y},{ \y});
+
+  % --- Eixos ---
+  \draw[->, thick] (-1.3,0) -- (1.3,0) node[below right=-2pt] {$y$};
+  \draw[->, thick] (0,-0.3) -- (0,1.5) node[left=-2pt] {$z$};
+
+  % --- Marcas e rótulos ---
+  \foreach \y in {-1,0,1} {
+    \draw (\y,0.04) -- (\y,-0.04);
+    \node[below left] at (\y,0) {\small \y};
+  }
+
+  \foreach \z in {1} {
+    \draw (0.04,\z) -- (-0.04,\z);
+    \node[above left] at (0,\z) {\small \z};
+  }
+
+  % --- Ponto de interseção superior ---
+  \filldraw[black] (1,1) circle (0.02);
+  \filldraw[black] (-1,1) circle (0.02);
+
+  % --- Pequena anotação do plano ---
+  % \node[anchor=west] at (0.6,1.5) {\small Plano $x=0$};
+  \node[anchor=west, text=red] at (0.1,0.7) {\small $z=|y|$};
+  \node[anchor=west, text=blue] at (0.6,0.4) {\small $z=y^2$};
+
+\end{tikzpicture}

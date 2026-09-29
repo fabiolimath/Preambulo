@@ -1,0 +1,45 @@
+\begin{tikzpicture}[scale=1]
+
+% === Parâmetros ===
+\def\a{2}   % limite das retas x = \pm a
+
+  \begin{axis}[      
+      axis lines=middle,            % Eixos no meio da figura
+      xlabel={$x$}, ylabel={$z$},
+      axis line style={thick},      % Eixos mais grossos
+      axis equal image,             % mantém escala x=z para os 45° ficarem corretos
+      set layers=axis on top,       % Eixos na camada de cima, para não ser encoberto pelo sombreado
+      enlargelimits,                % Pequeno aumento nos limites para melhorar a estética
+      xmin=-1.3*\a, xmax=1.3*\a, ymin=-1.3*\a, ymax=1.3*\a,
+      clip=false,                   % permite que rótulos ultrapassem a área dos eixos
+      xtick={-\a,\a}, ytick={-\a,\a},
+      x tick label style={anchor=north east}, % rótulos abaixo e a esquerda do eixo X
+      y tick label style={anchor=south east}, % rótulos acima e a esquerda do eixo y
+      % width=8cm, height=6cm,
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+    ]
+
+    % --- Linhas Tracejadas ---
+     \addplot[Tracejado] coordinates {(\a,0) (\a,\a)};
+     \addplot[Tracejado] coordinates {(0,\a) (\a,\a)};
+
+    % --- Curvas ---
+
+    \addplot[thick, blue, domain=-1.2*\a:1.2*\a] ({\a}, {x}) node[pos=0.85, right, blue] {$x=2$};   % Reta vertical x=2
+    \addplot[thick, blue, domain=-1.2*\a:1.2*\a] ({-\a}, {x}) node[pos=0.85, left, blue] {$x=-2$};  % Reta vertical x=-2
+
+    \addplot[thick, red, domain=-1.2*\a:1.2*\a, samples=100] {x} node[pos=1, above, red] {$z=x$};   % Reta z=x
+    \addplot[thick, red, domain=-1.2*\a:1.2*\a, samples=100] {-x} node[pos=1, below, red] {$z=-x$}; % Reta z=-x
+
+    % --- Região sombreada: triângulo no 1o quadrante ---
+    \path[fill=gray!30, opacity=0.6]
+      (axis cs:0,0) -- (axis cs:\a,0) -- (axis cs:\a,\a) -- cycle;
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(\a,\a) (-\a,\a) (\a,-\a) (-\a,-\a)};
+
+
+  \end{axis}
+  
+\end{tikzpicture}

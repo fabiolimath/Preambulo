@@ -1,0 +1,47 @@
+\begin{tikzpicture}[scale=1]
+
+% === Parâmetros ===
+\def\a{1}    % coordenada x 
+\def\b{\a^2} % coordenada y
+
+
+  \begin{axis}[      
+      xlabel={$x$}, ylabel={$y$},   
+      axis equal image, % mantém escala x=y para círculos não ficarem ovalados
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+      xmin=0, xmax=1.2*\a, ymin=0, ymax=1.2*\b,
+      % width=8cm, height=6cm,
+      xtick={\a},
+      % xticklabels={-3,-2,0,2,3}
+      ytick={\b}, 
+      % yticklabels={-\r,$-\sqrt{\yintb}$,0,$\sqrt{\yintb}$,\r},
+      x tick label style={anchor=north east}, 
+      y tick label style={anchor=south east}, 
+    ]
+
+    % --- Curvas Parametrizadas ---
+    \addplot[name path=parab, thick, red, domain=-1.1*\a:1.1*\a] ({x},{x^2});   % Parábola y=x^2 
+    \addplot[name path=line, thick, blue, domain=-1.1*\b:1.1*\b] (\a,{x});      % Reta vertical x=a
+
+    % --- Região sombreada com Arc ---
+    \path[fill=gray!30, opacity=0.6]
+      plot[domain=0:\a, samples=100] ({\x},{\x^2}) -- (axis cs:\a,0)
+      -- cycle;          % Conecta o ponto inicial ao final
+
+
+    % --- Linhas Tracejadas ---
+     \addplot[Tracejado] coordinates {(0,\b) (\a,\b)};
+     \addplot[Tracejado] coordinates {(\a,0) (\a,\b)};
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(\a,\b)
+                                                        (\a,0)
+                                                        (0,0)
+    };
+
+
+  \end{axis}
+
+  
+\end{tikzpicture}

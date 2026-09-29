@@ -1,0 +1,58 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%       Quadrante Generalizado  %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Círculo de raio r num plano coordenado, com parte do disco sombreada.
+% Uso: \Quadrante{eixo horizontal}{eixo vertical}{r}{q}
+% Ex.: \Quadrante{x}{y}{2}{4}  % 4º quadrante do plano xy, raio 2
+%      \Quadrante{y}{z}{3}{t}  % metade de cima do plano yz, raio 3
+% q = 1, 2, 3, 4 : um quadrante
+% q = t, b, l, r : metade de cima (top), de baixo (bottom), esquerda (left) ou direita (right)
+% q = o          : círculo todo
+
+% Comando auxiliar, com a região definida explicitamente
+% #1, #2: eixos (horizontal e vertical)   #3: raio
+% #4, #5: ponto (a,b) onde começa o arco  #6, #7: ângulos inicial (i) e final (j)
+\newcommand{\QuadranteAux}[7]{%
+\begin{tikzpicture}[scale=1]
+  \begin{axis}[
+      xlabel={$#1$}, ylabel={$#2$},
+      axis equal image,                % mantém escala para círculos não ficarem ovalados
+      xtick={#3}, ytick=\empty,
+      x tick label style={anchor=south west}, % rótulos acima e à direita do eixo horizontal
+      every axis x label/.style={at={(ticklabel* cs:0.99)}, anchor=west},
+      every axis y label/.style={at={(ticklabel* cs:0.99)}, anchor=south},
+    ]
+
+    % --- Curvas ---
+    \addplot[thick, blue, domain=0:360, samples=360]({#3*cos(x)},{#3*sin(x)});
+
+    % --- Região sombreada ---
+    \path[fill=gray!30, opacity=0.6]
+      (axis cs:0,0) -- (axis cs:#4,#5)  % Segmento inicial
+      % O "arc" começa no último ponto: não coloque "--" antes dele
+      arc[start angle=#6, end angle=#7, radius=#3] % Arco do ciclo
+      -- cycle;                         % Conecta o ponto final à origem
+
+  \end{axis}
+\end{tikzpicture}%
+}
+
+% Tabela de q -> (a, b, i, j). Cada entrada recebe #1, #2 (eixos) e #3 (raio).
+\makeatletter
+\@namedef{Quadrante@1}#1#2#3{\QuadranteAux{#1}{#2}{#3}{#3}{0}{0}{90}}
+\@namedef{Quadrante@2}#1#2#3{\QuadranteAux{#1}{#2}{#3}{0}{#3}{90}{180}}
+\@namedef{Quadrante@3}#1#2#3{\QuadranteAux{#1}{#2}{#3}{-#3}{0}{180}{270}}
+\@namedef{Quadrante@4}#1#2#3{\QuadranteAux{#1}{#2}{#3}{0}{-#3}{270}{360}}
+\@namedef{Quadrante@t}#1#2#3{\QuadranteAux{#1}{#2}{#3}{#3}{0}{0}{180}}
+\@namedef{Quadrante@l}#1#2#3{\QuadranteAux{#1}{#2}{#3}{0}{#3}{90}{270}}
+\@namedef{Quadrante@b}#1#2#3{\QuadranteAux{#1}{#2}{#3}{-#3}{0}{180}{360}}
+\@namedef{Quadrante@r}#1#2#3{\QuadranteAux{#1}{#2}{#3}{0}{-#3}{-90}{90}}
+\@namedef{Quadrante@o}#1#2#3{\QuadranteAux{#1}{#2}{#3}{#3}{0}{0}{360}}
+
+\newcommand{\Quadrante}[4]{%
+  \@ifundefined{Quadrante@#4}%
+    {\PackageError{Quadrante}{q = '#4' invalido}{Use 1, 2, 3, 4, t, b, l, r ou o.}}%
+    {\@nameuse{Quadrante@#4}{#1}{#2}{#3}}%
+}
+\makeatother
