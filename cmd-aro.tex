@@ -1,0 +1,61 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%       Aro       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Dois círculos de centro na origem, de raios r < R, num plano coordenado,
+% com parte da região entre eles (coroa circular) sombreada.
+% Uso: \Aro{eixo horizontal}{eixo vertical}{r}{R}{q}
+% Ex.: \Aro{x}{y}{1}{2}{1}  % parte do aro no 1º quadrante do plano xy
+%      \Aro{y}{z}{1}{3}{t}  % metade de cima do aro no plano yz
+% q = 1, 2, 3, 4 : um quadrante
+% q = t, b, l, r : metade de cima (top), de baixo (bottom), esquerda (left) ou direita (right)
+% q = o          : aro todo
+
+% Comando auxiliar, com a região definida explicitamente
+% #1, #2: eixos (horizontal e vertical)   #3, #4: raios menor (r) e maior (R)
+% #5, #6: ângulos inicial (i) e final (j)
+\newcommand{\AroAux}[6]{%
+\begin{tikzpicture}[scale=1]
+  \begin{axis}[
+      xlabel={$#1$}, ylabel={$#2$},
+      axis equal image,                % mantém escala para círculos não ficarem ovalados
+      xtick={#3,#4}, ytick=\empty,
+      x tick label style={anchor=south west}, % rótulos acima e à direita do eixo horizontal
+      every axis x label/.style={at={(ticklabel* cs:0.99)}, anchor=west},
+      every axis y label/.style={at={(ticklabel* cs:0.99)}, anchor=south},
+    ]
+
+    % --- Curvas ---
+    \addplot[thick, blue, domain=0:360, samples=360]({#3*cos(x)},{#3*sin(x)});
+    \addplot[thick, blue, domain=0:360, samples=360]({#4*cos(x)},{#4*sin(x)});
+
+    % --- Região sombreada ---
+    \path[fill=gray!30, opacity=0.6]
+      (axis cs:{#4*cos(#5)},{#4*sin(#5)})              % Ponto inicial, no círculo maior
+      arc[start angle=#5, end angle=#6, radius=#4]      % Arco do círculo maior, de i a j
+      -- (axis cs:{#3*cos(#6)},{#3*sin(#6)})           % Segmento até o círculo menor
+      arc[start angle=#6, end angle=#5, radius=#3]      % Arco do círculo menor, de volta de j a i
+      -- cycle;                                         % Fecha no ponto inicial
+
+  \end{axis}
+\end{tikzpicture}%
+}
+
+% Tabela de q -> (i, j). Cada entrada recebe #1, #2 (eixos), #3 (r) e #4 (R).
+\makeatletter
+\@namedef{Aro@1}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{0}{90}}
+\@namedef{Aro@2}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{90}{180}}
+\@namedef{Aro@3}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{180}{270}}
+\@namedef{Aro@4}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{270}{360}}
+\@namedef{Aro@t}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{0}{180}}
+\@namedef{Aro@l}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{90}{270}}
+\@namedef{Aro@b}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{180}{360}}
+\@namedef{Aro@r}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{-90}{90}}
+\@namedef{Aro@o}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{0}{360}}
+
+\newcommand{\Aro}[5]{%
+  \@ifundefined{Aro@#5}%
+    {\PackageError{Aro}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, l, r ou o.}}%
+    {\@nameuse{Aro@#5}{#1}{#2}{#3}{#4}}%
+}
+\makeatother

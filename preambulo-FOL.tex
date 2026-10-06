@@ -72,6 +72,19 @@
 \newcommand{\quadrantexz}[2]{\Quadrante{x}{z}{#1}{#2}}
 \newcommand{\quadranteyz}[2]{\Quadrante{y}{z}{#1}{#2}}
 
+% \Aro{eixo h}{eixo v}{raio menor}{raio maior}{q}: região entre dois círculos
+% de centro na origem, com quadrante(s) sombreado(s)
+\InputIfFileExists{cmd-aro}{}{}
+% q = 1, 2, 3, 4 : um quadrante
+% q = t, b, l, r : metades do aro: top, bottom, left ou right
+% q = o          : aro todo
+
+% Aros com eixos fixados, mais usuais.
+% Recebe #1 = raio menor, #2 = raio maior e #3 = q
+\newcommand{\aroxy}[3]{\Aro{x}{y}{#1}{#2}{#3}}
+\newcommand{\aroxz}[3]{\Aro{x}{z}{#1}{#2}{#3}}
+\newcommand{\aroyz}[3]{\Aro{y}{z}{#1}{#2}{#3}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%       Comandos para modo Texto        %%%%%%%%%%%%%%%%%%%
