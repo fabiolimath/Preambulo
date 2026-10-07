@@ -17,13 +17,13 @@
 % Comando auxiliar, com a região definida explicitamente
 % #1, #2: eixos (horizontal e vertical)   #3, #4: domínio do sombreado, de #3 a #4
 \newcommand{\ParaboloideNconeAux}[4]{%
-\begin{tikzpicture}[scale=1]
+\begin{tikzpicture}[scale=2]
   \begin{axis}[
       xlabel={$#1$}, ylabel={$#2$},
       xtick={-1,0,1}, ytick={0,1},
       x tick label style={anchor=north east}, % rótulos abaixo e à esquerda do eixo horizontal
       y tick label style={anchor=south east}, % rótulos acima e à esquerda do eixo vertical
-      width=8cm, height=6cm,
+      width=7.3cm, height=5.5cm,
       every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
       every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
     ]
