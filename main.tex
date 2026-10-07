@@ -9,17 +9,19 @@
 
 % \end{multicols}
 
-% Exemplos dos comandos de figuras TikZ do preâmbulo, 3 por linha
+% Exemplos dos comandos de figuras TikZ do preâmbulo, 3 por linha,
+% centralizados verticalmente em cada linha
+\newcommand{\Exemplo}[1]{$\vcenter{\hbox{\resizebox{0.32\textwidth}{!}{#1}}}$}
 \noindent
-\resizebox{0.32\textwidth}{!}{\quadrantexy{3}{r}}\hfill
-\resizebox{0.32\textwidth}{!}{\aroxz{2}{3}{b}}\hfill
-\resizebox{0.32\textwidth}{!}{\esferaNcilindroyz{2}{3}{d}}
+\Exemplo{\quadrantexy{3}{r}}\hfill
+\Exemplo{\aroxz{2}{3}{b}}\hfill
+\Exemplo{\esferaNcilindroyz{2}{3}{d}}
 
 \bigskip
 \noindent
-\resizebox{0.32\textwidth}{!}{\esferaEcilindroyz{2}{3}{o}}\hfill
-\resizebox{0.32\textwidth}{!}{\cilindroNconexz{2}{1}}\hfill
-\resizebox{0.32\textwidth}{!}{\paraboloideNconexy{o}}
+\Exemplo{\esferaEcilindroyz{2}{3}{o}}\hfill
+\Exemplo{\cilindroNconexz{2}{1}}\hfill
+\Exemplo{\paraboloideNconexy{o}}
 
 \vspace{1.5cm}
 
