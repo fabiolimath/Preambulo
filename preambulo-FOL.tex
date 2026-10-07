@@ -61,18 +61,6 @@
   every axis label/.append style={font=\Large}, % Variáveis dos eixos em fonte maior
 }
 
-% \Quadrante{eixo h}{eixo v}{raio}{q}: círculo com quadrante(s) sombreado(s)
-\InputIfFileExists{cmd-quadrante}{}{}
-% q = 1, 2, 3, 4 : um quadrante
-% q = t, b, l, r : metades do círculo: top, bottom, left ou right
-% q = o          : círculo todo
-
-% Quadrantes com eixos fixados, mais usuais. 
-% Recebe #1 = raio e #2 = q
-\newcommand{\quadrantexy}[2]{\Quadrante{x}{y}{#1}{#2}}
-\newcommand{\quadrantexz}[2]{\Quadrante{x}{z}{#1}{#2}}
-\newcommand{\quadranteyz}[2]{\Quadrante{y}{z}{#1}{#2}}
-
 % \Aro{eixo h}{eixo v}{raio menor}{raio maior}{q}: região entre dois círculos
 % de centro na origem, com quadrante(s) sombreado(s)
 \InputIfFileExists{cmd-aro}{}{}
