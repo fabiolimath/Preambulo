@@ -118,6 +118,19 @@
 \newcommand{\cilindroNconexz}[2]{\CilindroNcone{x}{z}{#1}{#2}}
 \newcommand{\cilindroNconeyz}[2]{\CilindroNcone{y}{z}{#1}{#2}}
 
+% \ParaboloideNcone{eixo h}{eixo v}{q}: corte do paraboloide v = h^2 e do cone
+% v = |h|, com a região entre as curvas sombreada
+\InputIfFileExists{cmd-paraboloidecone}{}{}
+% q = o, t    : a região toda
+% q = 1, d, r : a parte da direita
+% q = 2, e, l : a parte da esquerda   (3, 4 e b não se aplicam)
+
+% Paraboloide N cone com eixos fixados, mais usuais.
+% Recebe #1 = q
+\newcommand{\paraboloideNconexy}[1]{\ParaboloideNcone{x}{y}{#1}}
+\newcommand{\paraboloideNconexz}[1]{\ParaboloideNcone{x}{z}{#1}}
+\newcommand{\paraboloideNconeyz}[1]{\ParaboloideNcone{y}{z}{#1}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%       Comandos para modo Texto        %%%%%%%%%%%%%%%%%%%
