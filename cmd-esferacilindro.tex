@@ -1,0 +1,84 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%     Esfera N Cilindro     %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Corte, num plano coordenado, de uma esfera de raio r e de um cilindro de
+% raio a < r: um círculo de raio r e as retas h = -a e h = a, com os pontos
+% de interseção e a(s) calota(s) do círculo fora do cilindro sombreada(s).
+% Uso: \EsferaNcilindro{eixo horizontal}{eixo vertical}{a}{r}{q}
+% Ex.: \EsferaNcilindro{y}{z}{2}{3}{d}  % só a calota da direita, no plano yz
+% q = d : calota da direita
+% q = e : calota da esquerda
+% q = a : as duas calotas (ambas)
+% q = n : nenhuma calota sombreada
+
+% Comando auxiliar, com as regiões definidas explicitamente
+% #1, #2: eixos (horizontal e vertical)   #3: raio do cilindro (a)   #4: raio da esfera (r)
+% #5, #6: 1 sombreia, 0 não sombreia a calota da direita (#5) e a da esquerda (#6)
+\makeatletter
+\newcommand{\EsferaNcilindroAux}[6]{%
+\begin{tikzpicture}[scale=2]
+  % === Cálculos automáticos ===
+  \pgfmathsetmacro{\EC@yint}{sqrt(#4*#4 - #3*#3)}   % coordenada vertical das interseções
+  \pgfmathtruncatemacro{\EC@yintb}{#4*#4 - #3*#3}   % o que vai dentro da raiz, pra impressão
+  \pgfmathsetmacro{\EC@ang}{atan(\EC@yint/#3)}      % ângulo correspondente
+
+  \begin{axis}[
+      xlabel={$#1$}, ylabel={$#2$},
+      axis equal image,                % mantém escala para círculos não ficarem ovalados
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+      xmin=-1.2*#4, xmax=1.2*#4, ymin=-1.2*#4, ymax=1.2*#4,
+      xtick={-#4,-#3,0,#3,#4},
+      ytick={-#4,-\EC@yint,0,\EC@yint,#4},
+      yticklabels={-#4,$-\sqrt{\EC@yintb}$,0,$\sqrt{\EC@yintb}$,#4},
+      x tick label style={anchor=north east},
+      y tick label style={anchor=south east},
+    ]
+
+    % --- Curvas ---
+    \draw[thick, blue] (axis cs:0,0) circle [radius=#4];                      % Círculo de raio r
+    \addplot[thick, red, domain=-1.2*#4:1.2*#4] ({#3}, {x});                  % Reta h = a
+    \addplot[thick, red, domain=-1.2*#4:1.2*#4] ({-#3}, {x});                 % Reta h = -a
+
+    % --- Calota da direita ---
+    \ifnum#5=1
+    \path[fill=gray!30, opacity=0.6]
+      (axis cs:#3,-\EC@yint)                                        % Ponto inicial, embaixo
+      arc[start angle=-\EC@ang, end angle=\EC@ang, radius=#4]       % Arco do círculo
+      -- cycle;                                                     % Fecha pelo segmento vertical
+    \fi
+
+    % --- Calota da esquerda ---
+    \ifnum#6=1
+    \path[fill=gray!30, opacity=0.6]
+      (axis cs:-#3,\EC@yint)                                        % Ponto inicial, em cima
+      arc[start angle=180-\EC@ang, end angle=180+\EC@ang, radius=#4]
+      -- cycle;
+    \fi
+
+    % --- Linhas tracejadas ---
+    \addplot[Tracejado] coordinates {(-#3,-\EC@yint) (#3,-\EC@yint)};
+    \addplot[Tracejado] coordinates {(-#3,\EC@yint) (#3,\EC@yint)};
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {
+      (-#3,\EC@yint) (-#3,-\EC@yint) (#3,-\EC@yint) (#3,\EC@yint)
+    };
+
+  \end{axis}
+\end{tikzpicture}%
+}
+
+% Tabela de q -> (direita, esquerda). Cada entrada recebe #1, #2 (eixos), #3 (a) e #4 (r).
+\@namedef{EsferaNcilindro@d}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{1}{0}}
+\@namedef{EsferaNcilindro@e}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{0}{1}}
+\@namedef{EsferaNcilindro@a}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{1}{1}}
+\@namedef{EsferaNcilindro@n}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{0}{0}}
+
+\newcommand{\EsferaNcilindro}[5]{%
+  \@ifundefined{EsferaNcilindro@#5}%
+    {\PackageError{EsferaNcilindro}{q = '#5' invalido}{Use d, e, a ou n.}}%
+    {\@nameuse{EsferaNcilindro@#5}{#1}{#2}{#3}{#4}}%
+}
+\makeatother

@@ -85,6 +85,19 @@
 \newcommand{\aroxz}[3]{\Aro{x}{z}{#1}{#2}{#3}}
 \newcommand{\aroyz}[3]{\Aro{y}{z}{#1}{#2}{#3}}
 
+% \EsferaNcilindro{eixo h}{eixo v}{a}{r}{q}: corte de esfera de raio r e
+% cilindro de raio a < r, com calota(s) do círculo fora do cilindro sombreada(s)
+\InputIfFileExists{cmd-esferacilindro}{}{}
+% q = d, e : calota da direita ou da esquerda
+% q = a    : as duas calotas (ambas)
+% q = n    : nenhuma calota sombreada
+
+% Esfera N cilindro com eixos fixados, mais usuais.
+% Recebe #1 = a (raio do cilindro), #2 = r (raio da esfera) e #3 = q
+\newcommand{\esferaNcilindroxy}[3]{\EsferaNcilindro{x}{y}{#1}{#2}{#3}}
+\newcommand{\esferaNcilindroxz}[3]{\EsferaNcilindro{x}{z}{#1}{#2}{#3}}
+\newcommand{\esferaNcilindroyz}[3]{\EsferaNcilindro{y}{z}{#1}{#2}{#3}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%       Comandos para modo Texto        %%%%%%%%%%%%%%%%%%%
