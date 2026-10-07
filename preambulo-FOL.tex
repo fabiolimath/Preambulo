@@ -57,7 +57,8 @@
       axis line style={thick},      % Eixos mais grossos
       set layers=axis on top,       % Eixos na camada de cima, para não ser encoberto pelo sombreado
       enlargelimits,                % Pequeno aumento nos limites para melhorar a estética
-  }
+  },
+  every axis label/.append style={font=\Large}, % Variáveis dos eixos em fonte maior
 }
 
 % \Quadrante{eixo h}{eixo v}{raio}{q}: círculo com quadrante(s) sombreado(s)
