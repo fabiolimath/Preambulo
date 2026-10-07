@@ -87,6 +87,7 @@
 
 % \EsferaNcilindro{eixo h}{eixo v}{a}{r}{q}: corte de esfera de raio r e
 % cilindro de raio a < r, com calota(s) do círculo fora do cilindro sombreada(s)
+% (\EsferaEcilindro, definido no mesmo arquivo, sombreia a faixa dentro do cilindro)
 \InputIfFileExists{cmd-esferacilindro}{}{}
 % q = 1, 2, 3, 4 : parte das calotas num quadrante
 % q = t, b, d, e : metades: top, bottom, direita ou esquerda (l, r também valem)
@@ -97,6 +98,13 @@
 \newcommand{\esferaNcilindroxy}[3]{\EsferaNcilindro{x}{y}{#1}{#2}{#3}}
 \newcommand{\esferaNcilindroxz}[3]{\EsferaNcilindro{x}{z}{#1}{#2}{#3}}
 \newcommand{\esferaNcilindroyz}[3]{\EsferaNcilindro{y}{z}{#1}{#2}{#3}}
+
+% \EsferaEcilindro{eixo h}{eixo v}{a}{r}{q}: mesmo corte, com a faixa do círculo
+% dentro do cilindro (|h| <= a) sombreada; q como acima
+\newcommand{\esferaEcilindroxy}[3]{\EsferaEcilindro{x}{y}{#1}{#2}{#3}}
+\newcommand{\esferaEcilindroxz}[3]{\EsferaEcilindro{x}{z}{#1}{#2}{#3}}
+\newcommand{\esferaEcilindroyz}[3]{\EsferaEcilindro{y}{z}{#1}{#2}{#3}}
+\newcommand{\esferaEcilindro}[3]{\esferaEcilindroyz{#1}{#2}{#3}}  % plano yz, o mais usual
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

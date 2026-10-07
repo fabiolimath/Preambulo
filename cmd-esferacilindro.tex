@@ -1,24 +1,49 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%     Esfera N Cilindro     %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%     Esfera e Cilindro     %%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Corte, num plano coordenado, de uma esfera de raio r e de um cilindro de
 % raio a < r: um círculo de raio r e as retas h = -a e h = a, com os pontos
-% de interseção e a(s) calota(s) do círculo fora do cilindro sombreada(s).
+% de interseção e parte de uma região sombreada:
+%   \EsferaNcilindro : calotas do círculo FORA do cilindro (|h| >= a)
+%   \EsferaEcilindro : faixa do círculo DENTRO do cilindro (|h| <= a)
 % Uso: \EsferaNcilindro{eixo horizontal}{eixo vertical}{a}{r}{q}
+%      \EsferaEcilindro{eixo horizontal}{eixo vertical}{a}{r}{q}
 % Ex.: \EsferaNcilindro{y}{z}{2}{3}{d}  % só a calota da direita, no plano yz
-%      \EsferaNcilindro{x}{y}{1}{2}{1}  % parte das calotas no 1º quadrante
-% q = 1, 2, 3, 4 : parte das calotas num quadrante
+%      \EsferaEcilindro{y}{z}{2}{3}{o}  % a faixa toda, no plano yz
+% q = 1, 2, 3, 4 : parte da região num quadrante
 % q = t, b, d, e : metade de cima (top), de baixo (bottom), direita ou esquerda
 %                  (l e r também valem, como no \Aro)
-% q = o          : as duas calotas inteiras
+% q = o          : a região toda
 
-% Comando auxiliar, com as regiões definidas explicitamente
-% #1, #2: eixos (horizontal e vertical)   #3: raio do cilindro (a)   #4: raio da esfera (r)
-% #5, #6, #7, #8: retângulo de recorte do sombreado, em múltiplos de 1.2r:
-%   h de #5 a #6 e v de #7 a #8 (cada um -1, 0 ou 1)
 \makeatletter
-\newcommand{\EsferaNcilindroAux}[8]{%
+
+% Regiões sombreadas. Recebem #1 = a, #2 = r; usam \EC@yint e \EC@ang.
+\def\EC@regiao@N#1#2{%
+    \path[fill=gray!30, opacity=0.6]                               % Calota da direita
+      (axis cs:#1,-\EC@yint)                                        % Ponto inicial, embaixo
+      arc[start angle=-\EC@ang, end angle=\EC@ang, radius=#2]       % Arco do círculo
+      -- cycle;                                                     % Fecha pelo segmento vertical
+    \path[fill=gray!30, opacity=0.6]                               % Calota da esquerda
+      (axis cs:-#1,\EC@yint)                                        % Ponto inicial, em cima
+      arc[start angle=180-\EC@ang, end angle=180+\EC@ang, radius=#2]
+      -- cycle;
+}
+\def\EC@regiao@E#1#2{%
+    \path[fill=gray!30, opacity=0.6]                               % Faixa entre h = -a e h = a
+      (axis cs:#1,\EC@yint)                                         % Ponto inicial, em cima à direita
+      arc[start angle=\EC@ang, end angle=180-\EC@ang, radius=#2]    % Arco de cima
+      -- (axis cs:-#1,-\EC@yint)                                    % Segmento vertical h = -a
+      arc[start angle=180+\EC@ang, end angle=360-\EC@ang, radius=#2] % Arco de baixo
+      -- cycle;                                                     % Fecha pelo segmento h = a
+}
+
+% Comando auxiliar, com a região definida explicitamente
+% #1, #2: eixos (horizontal e vertical)   #3: raio do cilindro (a)   #4: raio da esfera (r)
+% #5: região (N = fora do cilindro, E = dentro do cilindro)
+% #6, #7, #8, #9: retângulo de recorte do sombreado, em múltiplos de 1.2r:
+%   h de #6 a #7 e v de #8 a #9 (cada um -1, 0 ou 1)
+\newcommand{\EsferaCilindroAux}[9]{%
 \begin{tikzpicture}[scale=2]
   % === Cálculos automáticos ===
   \pgfmathsetmacro{\EC@yint}{sqrt(#4*#4 - #3*#3)}   % coordenada vertical das interseções
@@ -43,17 +68,10 @@
     \addplot[thick, red, domain=-1.2*#4:1.2*#4] ({#3}, {x});                  % Reta h = a
     \addplot[thick, red, domain=-1.2*#4:1.2*#4] ({-#3}, {x});                 % Reta h = -a
 
-    % --- Calotas sombreadas, recortadas pela parte escolhida (q) ---
+    % --- Região sombreada, recortada pela parte escolhida (q) ---
     \begin{scope}
-    \clip (axis cs:{#5*1.2*#4},{#7*1.2*#4}) rectangle (axis cs:{#6*1.2*#4},{#8*1.2*#4});
-    \path[fill=gray!30, opacity=0.6]                               % Calota da direita
-      (axis cs:#3,-\EC@yint)                                        % Ponto inicial, embaixo
-      arc[start angle=-\EC@ang, end angle=\EC@ang, radius=#4]       % Arco do círculo
-      -- cycle;                                                     % Fecha pelo segmento vertical
-    \path[fill=gray!30, opacity=0.6]                               % Calota da esquerda
-      (axis cs:-#3,\EC@yint)                                        % Ponto inicial, em cima
-      arc[start angle=180-\EC@ang, end angle=180+\EC@ang, radius=#4]
-      -- cycle;
+    \clip (axis cs:{#6*1.2*#4},{#8*1.2*#4}) rectangle (axis cs:{#7*1.2*#4},{#9*1.2*#4});
+    \csname EC@regiao@#5\endcsname{#3}{#4}
     \end{scope}
 
     % --- Linhas tracejadas ---
@@ -69,22 +87,26 @@
 \end{tikzpicture}%
 }
 
-% Tabela de q -> retângulo de recorte. Cada entrada recebe #1, #2 (eixos), #3 (a) e #4 (r).
-\@namedef{EsferaNcilindro@1}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{0}{1}{0}{1}}
-\@namedef{EsferaNcilindro@2}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{0}{0}{1}}
-\@namedef{EsferaNcilindro@3}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{0}{-1}{0}}
-\@namedef{EsferaNcilindro@4}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{0}{1}{-1}{0}}
-\@namedef{EsferaNcilindro@t}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{1}{0}{1}}
-\@namedef{EsferaNcilindro@b}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{1}{-1}{0}}
-\@namedef{EsferaNcilindro@d}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{0}{1}{-1}{1}}
-\@namedef{EsferaNcilindro@e}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{0}{-1}{1}}
-\@namedef{EsferaNcilindro@r}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{0}{1}{-1}{1}}
-\@namedef{EsferaNcilindro@l}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{0}{-1}{1}}
-\@namedef{EsferaNcilindro@o}#1#2#3#4{\EsferaNcilindroAux{#1}{#2}{#3}{#4}{-1}{1}{-1}{1}}
+% Tabela de q -> retângulo de recorte. Cada entrada recebe #1, #2 (eixos), #3 (a), #4 (r) e #5 (região).
+\@namedef{EsferaCilindro@1}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{0}{1}{0}{1}}
+\@namedef{EsferaCilindro@2}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{0}{0}{1}}
+\@namedef{EsferaCilindro@3}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{0}{-1}{0}}
+\@namedef{EsferaCilindro@4}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{0}{1}{-1}{0}}
+\@namedef{EsferaCilindro@t}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{1}{0}{1}}
+\@namedef{EsferaCilindro@b}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{1}{-1}{0}}
+\@namedef{EsferaCilindro@d}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{0}{1}{-1}{1}}
+\@namedef{EsferaCilindro@e}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{0}{-1}{1}}
+\@namedef{EsferaCilindro@r}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{0}{1}{-1}{1}}
+\@namedef{EsferaCilindro@l}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{0}{-1}{1}}
+\@namedef{EsferaCilindro@o}#1#2#3#4#5{\EsferaCilindroAux{#1}{#2}{#3}{#4}{#5}{-1}{1}{-1}{1}}
 
-\newcommand{\EsferaNcilindro}[5]{%
-  \@ifundefined{EsferaNcilindro@#5}%
-    {\PackageError{EsferaNcilindro}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, d, e (ou l, r) ou o.}}%
-    {\@nameuse{EsferaNcilindro@#5}{#1}{#2}{#3}{#4}}%
+% Despacho comum: #1, #2 eixos, #3 a, #4 r, #5 q, #6 região
+\newcommand{\EsferaCilindro@q}[6]{%
+  \@ifundefined{EsferaCilindro@#5}%
+    {\PackageError{EsferaCilindro}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, d, e (ou l, r) ou o.}}%
+    {\@nameuse{EsferaCilindro@#5}{#1}{#2}{#3}{#4}{#6}}%
 }
+
+\newcommand{\EsferaNcilindro}[5]{\EsferaCilindro@q{#1}{#2}{#3}{#4}{#5}{N}}
+\newcommand{\EsferaEcilindro}[5]{\EsferaCilindro@q{#1}{#2}{#3}{#4}{#5}{E}}
 \makeatother
