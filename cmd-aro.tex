@@ -20,10 +20,12 @@
       xlabel={$#1$}, ylabel={$#2$},
       axis equal image,                % mantém escala para círculos não ficarem ovalados
       xmin=-1.2*#4, xmax=1.2*#4, ymin=-1.2*#4, ymax=1.2*#4, % mesma margem do \EsferaNcilindro
-      xtick={#3,#4}, ytick=\empty,
-      x tick label style={anchor=south west}, % rótulos acima e à direita do eixo horizontal
-      every axis x label/.style={at={(ticklabel* cs:0.99)}, anchor=west},
-      every axis y label/.style={at={(ticklabel* cs:0.99)}, anchor=south},
+      xtick={#3}, ytick=\empty,
+      x tick label style={anchor=north east}, % raio menor abaixo e à esquerda do tique
+      extra x ticks={#4},
+      extra x tick style={x tick label style={anchor=north west}}, % raio maior abaixo e à direita do tique
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
     ]
 
     % --- Curvas ---
