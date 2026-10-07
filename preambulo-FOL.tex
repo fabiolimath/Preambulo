@@ -88,9 +88,9 @@
 % \EsferaNcilindro{eixo h}{eixo v}{a}{r}{q}: corte de esfera de raio r e
 % cilindro de raio a < r, com calota(s) do círculo fora do cilindro sombreada(s)
 \InputIfFileExists{cmd-esferacilindro}{}{}
-% q = d, e : calota da direita ou da esquerda
-% q = a    : as duas calotas (ambas)
-% q = n    : nenhuma calota sombreada
+% q = 1, 2, 3, 4 : parte das calotas num quadrante
+% q = t, b, d, e : metades: top, bottom, direita ou esquerda (l, r também valem)
+% q = o          : as duas calotas inteiras
 
 % Esfera N cilindro com eixos fixados, mais usuais.
 % Recebe #1 = a (raio do cilindro), #2 = r (raio da esfera) e #3 = q
