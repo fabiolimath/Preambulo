@@ -105,6 +105,19 @@
 \newcommand{\esferaEcilindroxz}[3]{\EsferaEcilindro{x}{z}{#1}{#2}{#3}}
 \newcommand{\esferaEcilindroyz}[3]{\EsferaEcilindro{y}{z}{#1}{#2}{#3}}
 
+% \CilindroNcone{eixo h}{eixo v}{a}{q}: corte de cilindro de raio a e cone reto
+% (45°), com a região dentro do cilindro e fora do cone sombreada
+\InputIfFileExists{cmd-cilindrocone}{}{}
+% q = 1, 2, 3, 4 : parte da região num quadrante
+% q = t, b, d, e : metades: top, bottom, direita ou esquerda (l, r também valem)
+% q = o          : a região toda
+
+% Cilindro N cone com eixos fixados, mais usuais.
+% Recebe #1 = a (raio do cilindro) e #2 = q
+\newcommand{\cilindroNconexy}[2]{\CilindroNcone{x}{y}{#1}{#2}}
+\newcommand{\cilindroNconexz}[2]{\CilindroNcone{x}{z}{#1}{#2}}
+\newcommand{\cilindroNconeyz}[2]{\CilindroNcone{y}{z}{#1}{#2}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%       Comandos para modo Texto        %%%%%%%%%%%%%%%%%%%
