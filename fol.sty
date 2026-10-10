@@ -198,19 +198,6 @@
       -- cycle;                                                     % Fecha pelo segmento h = a
 }
 
-% Espessura das linhas, conforme a região. No E (faixa), em teste, tudo com o
-% dobro da espessura: traços normais, thick (eixos e curvas), very thin (tiques)
-% e o Tracejado. O N fica como as demais figuras.
-\tikzset{
-  EC@linhas@N/.style={},
-  EC@linhas@E/.style={
-    line width=0.8pt,
-    thick/.style={line width=1.6pt},
-    very thin/.style={line width=0.4pt},
-    Tracejado/.append style={line width=1pt},
-  },
-}
-
 % Tiques do eixo horizontal. Recebem #1 = a, #2 = r. Os de "extra x ticks"
 % ficam à direita do tique: r nas duas regiões, -a nas calotas (N) e a na faixa (E).
 \pgfplotsset{
@@ -224,7 +211,7 @@
 % #6, #7, #8, #9: retângulo de recorte do sombreado, em múltiplos de 1.2r:
 %   h de #6 a #7 e v de #8 a #9 (cada um -1, 0 ou 1)
 \newcommand{\EsferaCilindroAux}[9]{%
-\begin{tikzpicture}[scale=2*\fol@esc, EC@linhas@#5]
+\begin{tikzpicture}[scale=2*\fol@esc]
   % === Cálculos automáticos ===
   \pgfmathsetmacro{\EC@yint}{sqrt(#4*#4 - #3*#3)}   % coordenada vertical das interseções
   \pgfmathtruncatemacro{\EC@yintb}{#4*#4 - #3*#3}   % o que vai dentro da raiz, pra impressão
