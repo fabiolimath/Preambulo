@@ -198,6 +198,17 @@
       -- cycle;                                                     % Fecha pelo segmento h = a
 }
 
+% Tiques visíveis (pretos, cruzando o eixo), em teste só no E (faixa).
+% O padrão do pgfplots é cinza e muito fino, praticamente invisível.
+\pgfplotsset{
+  EC@tiques@N/.style={},
+  EC@tiques@E/.style={
+    every tick/.style={black, thin},
+    tick align=center,
+    major tick length=6pt,
+  },
+}
+
 % Tiques do eixo horizontal. Recebem #1 = a, #2 = r. Os de "extra x ticks"
 % ficam à direita do tique: r nas duas regiões, -a nas calotas (N) e a na faixa (E).
 \pgfplotsset{
@@ -224,6 +235,7 @@
       every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
       xmin=-1.2*#4, xmax=1.2*#4, ymin=-1.2*#4, ymax=1.2*#4,
       EC@ticks@#5={#3}{#4},            % tiques do eixo horizontal, conforme a região
+      EC@tiques@#5,                    % aparência dos tiques, conforme a região
       extra x tick style={x tick label style={anchor=north west}}, % abaixo e à direita do tique
       ytick={-\EC@yint,0},             % raio da esfera fora do eixo vertical, evita sobreposições
       yticklabels={$-\sqrt{\EC@yintb}$,0},
