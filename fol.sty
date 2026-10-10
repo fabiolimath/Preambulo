@@ -65,9 +65,24 @@
       axis line style={thick},      % Eixos mais grossos
       set layers=axis on top,       % Eixos na camada de cima, para não ser encoberto pelo sombreado
       enlargelimits,                % Pequeno aumento nos limites para melhorar a estética
+      every tick/.style={black, line width=1.2pt}, % Tiques destacados, por cima das curvas
+      tick align=center,            % Tiques cruzando o eixo
+      major tick length=6pt,
   },
   every axis label/.append style={font=\Large}, % Variáveis dos eixos em fonte maior
 }
+
+% Tamanho das figuras. Todos os comandos de figura abaixo (e os atalhos por
+% plano) aceitam um argumento opcional, antes dos demais, com a escala:
+%   \aroxy{1}{2}{1}       % tamanho padrão (≈ 326pt de largura)
+%   \aroxy[0.6]{1}{2}{1}  % versão pequena (60%), com o mesmo texto e os mesmos traços
+% Só o desenho encolhe: fonte, espessura dos traços e pontos continuam iguais,
+% por isso a figura pequena fica legível sem precisar de \resizebox.
+% Abaixo de 0.6 os rótulos começam a se sobrepor (no Xournal++, que usa \Large).
+% \EscalaFiguras{0.6} muda o padrão daí em diante (ex.: no template do Xournal++).
+\newcommand{\fol@escala}{1}
+\newcommand{\fol@esc}{1}
+\newcommand{\EscalaFiguras}[1]{\renewcommand{\fol@escala}{#1}}
 
 % \Aro{eixo h}{eixo v}{raio menor}{raio maior}{q}: região entre dois círculos
 % de centro na origem, com quadrante(s) sombreado(s)
@@ -88,7 +103,7 @@
 % #1, #2: eixos (horizontal e vertical)   #3, #4: raios menor (r) e maior (R)
 % #5, #6: ângulos inicial (i) e final (j)
 \newcommand{\AroAux}[6]{%
-\begin{tikzpicture}[scale=2]
+\begin{tikzpicture}[scale=2*\fol@esc]
   \begin{axis}[
       xlabel={$#1$}, ylabel={$#2$},
       axis equal image,                % mantém escala para círculos não ficarem ovalados
@@ -128,10 +143,11 @@
 \@namedef{Aro@r}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{-90}{90}}
 \@namedef{Aro@o}#1#2#3#4{\AroAux{#1}{#2}{#3}{#4}{0}{360}}
 
-\newcommand{\Aro}[5]{%
-  \@ifundefined{Aro@#5}%
-    {\PackageError{Aro}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, l, r ou o.}}%
-    {\@nameuse{Aro@#5}{#1}{#2}{#3}{#4}}%
+\newcommand{\Aro}[6][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \@ifundefined{Aro@#6}%
+    {\PackageError{Aro}{q = '#6' invalido}{Use 1, 2, 3, 4, t, b, l, r ou o.}}%
+    {\@nameuse{Aro@#6}{#2}{#3}{#4}{#5}}%
 }
 % q = 1, 2, 3, 4 : um quadrante
 % q = t, b, l, r : metades do aro: top, bottom, left ou right
@@ -139,9 +155,9 @@
 
 % Aros com eixos fixados, mais usuais.
 % Recebe #1 = raio menor, #2 = raio maior e #3 = q
-\newcommand{\aroxy}[3]{\Aro{x}{y}{#1}{#2}{#3}}
-\newcommand{\aroxz}[3]{\Aro{x}{z}{#1}{#2}{#3}}
-\newcommand{\aroyz}[3]{\Aro{y}{z}{#1}{#2}{#3}}
+\newcommand{\aroxy}[4][\fol@escala]{\Aro[#1]{x}{y}{#2}{#3}{#4}}
+\newcommand{\aroxz}[4][\fol@escala]{\Aro[#1]{x}{z}{#2}{#3}{#4}}
+\newcommand{\aroyz}[4][\fol@escala]{\Aro[#1]{y}{z}{#2}{#3}{#4}}
 
 % \EsferaNcilindro{eixo h}{eixo v}{a}{r}{q}: corte de esfera de raio r e
 % cilindro de raio a < r, com calota(s) do círculo fora do cilindro sombreada(s)
@@ -186,9 +202,9 @@
 }
 
 % Tiques do eixo horizontal. Recebem #1 = a, #2 = r. Os de "extra x ticks"
-% ficam à direita do tique: r nas duas regiões, e também a na faixa (E).
+% ficam à direita do tique: r nas duas regiões, -a nas calotas (N) e a na faixa (E).
 \pgfplotsset{
-  EC@ticks@N/.style 2 args={xtick={-#2,-#1,0,#1}, extra x ticks={#2}},
+  EC@ticks@N/.style 2 args={xtick={-#2,0,#1}, extra x ticks={-#1,#2}},
   EC@ticks@E/.style 2 args={xtick={-#2,-#1,0}, extra x ticks={#1,#2}},
 }
 
@@ -198,7 +214,7 @@
 % #6, #7, #8, #9: retângulo de recorte do sombreado, em múltiplos de 1.2r:
 %   h de #6 a #7 e v de #8 a #9 (cada um -1, 0 ou 1)
 \newcommand{\EsferaCilindroAux}[9]{%
-\begin{tikzpicture}[scale=2]
+\begin{tikzpicture}[scale=2*\fol@esc]
   % === Cálculos automáticos ===
   \pgfmathsetmacro{\EC@yint}{sqrt(#4*#4 - #3*#3)}   % coordenada vertical das interseções
   \pgfmathtruncatemacro{\EC@yintb}{#4*#4 - #3*#3}   % o que vai dentro da raiz, pra impressão
@@ -212,8 +228,11 @@
       xmin=-1.2*#4, xmax=1.2*#4, ymin=-1.2*#4, ymax=1.2*#4,
       EC@ticks@#5={#3}{#4},            % tiques do eixo horizontal, conforme a região
       extra x tick style={x tick label style={anchor=north west}}, % abaixo e à direita do tique
-      ytick={-#4,-\EC@yint,0,\EC@yint,#4},
-      yticklabels={-#4,$-\sqrt{\EC@yintb}$,0,$\sqrt{\EC@yintb}$,#4},
+      ytick={-\EC@yint,0},             % raio da esfera fora do eixo vertical, evita sobreposições
+      yticklabels={$-\sqrt{\EC@yintb}$,0},
+      extra y ticks={\EC@yint},        % interseção positiva...
+      extra y tick labels={$\sqrt{\EC@yintb}$},
+      extra y tick style={y tick label style={anchor=north east}}, % ...abaixo e à esquerda do tique
       x tick label style={anchor=north east},
       y tick label style={anchor=south east},
     ]
@@ -262,23 +281,23 @@
     {\@nameuse{EsferaCilindro@#5}{#1}{#2}{#3}{#4}{#6}}%
 }
 
-\newcommand{\EsferaNcilindro}[5]{\EsferaCilindro@q{#1}{#2}{#3}{#4}{#5}{N}}
-\newcommand{\EsferaEcilindro}[5]{\EsferaCilindro@q{#1}{#2}{#3}{#4}{#5}{E}}
+\newcommand{\EsferaNcilindro}[6][\fol@escala]{\def\fol@esc{#1}\EsferaCilindro@q{#2}{#3}{#4}{#5}{#6}{N}}
+\newcommand{\EsferaEcilindro}[6][\fol@escala]{\def\fol@esc{#1}\EsferaCilindro@q{#2}{#3}{#4}{#5}{#6}{E}}
 % q = 1, 2, 3, 4 : parte das calotas num quadrante
 % q = t, b, d, e : metades: top, bottom, direita ou esquerda (l, r também valem)
 % q = o          : as duas calotas inteiras
 
 % Esfera N cilindro com eixos fixados, mais usuais.
 % Recebe #1 = a (raio do cilindro), #2 = r (raio da esfera) e #3 = q
-\newcommand{\esferaNcilindroxy}[3]{\EsferaNcilindro{x}{y}{#1}{#2}{#3}}
-\newcommand{\esferaNcilindroxz}[3]{\EsferaNcilindro{x}{z}{#1}{#2}{#3}}
-\newcommand{\esferaNcilindroyz}[3]{\EsferaNcilindro{y}{z}{#1}{#2}{#3}}
+\newcommand{\esferaNcilindroxy}[4][\fol@escala]{\EsferaNcilindro[#1]{x}{y}{#2}{#3}{#4}}
+\newcommand{\esferaNcilindroxz}[4][\fol@escala]{\EsferaNcilindro[#1]{x}{z}{#2}{#3}{#4}}
+\newcommand{\esferaNcilindroyz}[4][\fol@escala]{\EsferaNcilindro[#1]{y}{z}{#2}{#3}{#4}}
 
 % \EsferaEcilindro{eixo h}{eixo v}{a}{r}{q}: mesmo corte, com a faixa do círculo
 % dentro do cilindro (|h| <= a) sombreada; q como acima
-\newcommand{\esferaEcilindroxy}[3]{\EsferaEcilindro{x}{y}{#1}{#2}{#3}}
-\newcommand{\esferaEcilindroxz}[3]{\EsferaEcilindro{x}{z}{#1}{#2}{#3}}
-\newcommand{\esferaEcilindroyz}[3]{\EsferaEcilindro{y}{z}{#1}{#2}{#3}}
+\newcommand{\esferaEcilindroxy}[4][\fol@escala]{\EsferaEcilindro[#1]{x}{y}{#2}{#3}{#4}}
+\newcommand{\esferaEcilindroxz}[4][\fol@escala]{\EsferaEcilindro[#1]{x}{z}{#2}{#3}{#4}}
+\newcommand{\esferaEcilindroyz}[4][\fol@escala]{\EsferaEcilindro[#1]{y}{z}{#2}{#3}{#4}}
 
 % \CilindroNcone{eixo h}{eixo v}{a}{q}: corte de cilindro de raio a e cone reto
 % (45°), com a região dentro do cilindro e fora do cone sombreada
@@ -303,7 +322,7 @@
 % #4, #5, #6, #7: retângulo de recorte do sombreado, em múltiplos de 1.3a:
 %   h de #4 a #5 e v de #6 a #7 (cada um -1, 0 ou 1)
 \newcommand{\CilindroNconeAux}[7]{%
-\begin{tikzpicture}[scale=2]
+\begin{tikzpicture}[scale=2*\fol@esc]
   \begin{axis}[
       xlabel={$#1$}, ylabel={$#2$},
       axis equal image,             % mantém escala para os 45° ficarem corretos
@@ -357,10 +376,11 @@
 \@namedef{CilindroNcone@l}#1#2#3{\CilindroNconeAux{#1}{#2}{#3}{-1}{0}{-1}{1}}
 \@namedef{CilindroNcone@o}#1#2#3{\CilindroNconeAux{#1}{#2}{#3}{-1}{1}{-1}{1}}
 
-\newcommand{\CilindroNcone}[4]{%
-  \@ifundefined{CilindroNcone@#4}%
-    {\PackageError{CilindroNcone}{q = '#4' invalido}{Use 1, 2, 3, 4, t, b, d, e (ou l, r) ou o.}}%
-    {\@nameuse{CilindroNcone@#4}{#1}{#2}{#3}}%
+\newcommand{\CilindroNcone}[5][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \@ifundefined{CilindroNcone@#5}%
+    {\PackageError{CilindroNcone}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, d, e (ou l, r) ou o.}}%
+    {\@nameuse{CilindroNcone@#5}{#2}{#3}{#4}}%
 }
 % q = 1, 2, 3, 4 : parte da região num quadrante
 % q = t, b, d, e : metades: top, bottom, direita ou esquerda (l, r também valem)
@@ -368,9 +388,9 @@
 
 % Cilindro N cone com eixos fixados, mais usuais.
 % Recebe #1 = a (raio do cilindro) e #2 = q
-\newcommand{\cilindroNconexy}[2]{\CilindroNcone{x}{y}{#1}{#2}}
-\newcommand{\cilindroNconexz}[2]{\CilindroNcone{x}{z}{#1}{#2}}
-\newcommand{\cilindroNconeyz}[2]{\CilindroNcone{y}{z}{#1}{#2}}
+\newcommand{\cilindroNconexy}[3][\fol@escala]{\CilindroNcone[#1]{x}{y}{#2}{#3}}
+\newcommand{\cilindroNconexz}[3][\fol@escala]{\CilindroNcone[#1]{x}{z}{#2}{#3}}
+\newcommand{\cilindroNconeyz}[3][\fol@escala]{\CilindroNcone[#1]{y}{z}{#2}{#3}}
 
 % \ParaboloideNcone{eixo h}{eixo v}{q}: corte do paraboloide v = h^2 e do cone
 % v = |h|, com a região entre as curvas sombreada
@@ -392,7 +412,7 @@
 % Comando auxiliar, com a região definida explicitamente
 % #1, #2: eixos (horizontal e vertical)   #3, #4: domínio do sombreado, de #3 a #4
 \newcommand{\ParaboloideNconeAux}[4]{%
-\begin{tikzpicture}[scale=2]
+\begin{tikzpicture}[scale=2*\fol@esc]
   \begin{axis}[
       xlabel={$#1$}, ylabel={$#2$},
       xtick={-1,0,1}, ytick={0,1},
@@ -435,10 +455,11 @@
 \@namedef{ParaboloideNcone@e}#1#2{\ParaboloideNconeAux{#1}{#2}{-1}{0}}
 \@namedef{ParaboloideNcone@l}#1#2{\ParaboloideNconeAux{#1}{#2}{-1}{0}}
 
-\newcommand{\ParaboloideNcone}[3]{%
-  \@ifundefined{ParaboloideNcone@#3}%
-    {\PackageError{ParaboloideNcone}{q = '#3' invalido}{Use o, t, 1, d, r, 2, e ou l (3, 4 e b ficam abaixo do eixo, onde nao ha regiao).}}%
-    {\@nameuse{ParaboloideNcone@#3}{#1}{#2}}%
+\newcommand{\ParaboloideNcone}[4][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \@ifundefined{ParaboloideNcone@#4}%
+    {\PackageError{ParaboloideNcone}{q = '#4' invalido}{Use o, t, 1, d, r, 2, e ou l (3, 4 e b ficam abaixo do eixo, onde nao ha regiao).}}%
+    {\@nameuse{ParaboloideNcone@#4}{#2}{#3}}%
 }
 % q = o, t    : a região toda
 % q = 1, d, r : a parte da direita
@@ -446,9 +467,9 @@
 
 % Paraboloide N cone com eixos fixados, mais usuais.
 % Recebe #1 = q
-\newcommand{\paraboloideNconexy}[1]{\ParaboloideNcone{x}{y}{#1}}
-\newcommand{\paraboloideNconexz}[1]{\ParaboloideNcone{x}{z}{#1}}
-\newcommand{\paraboloideNconeyz}[1]{\ParaboloideNcone{y}{z}{#1}}
+\newcommand{\paraboloideNconexy}[2][\fol@escala]{\ParaboloideNcone[#1]{x}{y}{#2}}
+\newcommand{\paraboloideNconexz}[2][\fol@escala]{\ParaboloideNcone[#1]{x}{z}{#2}}
+\newcommand{\paraboloideNconeyz}[2][\fol@escala]{\ParaboloideNcone[#1]{y}{z}{#2}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
