@@ -199,9 +199,9 @@
 }
 
 % Tiques do eixo horizontal. Recebem #1 = a, #2 = r. Os de "extra x ticks"
-% ficam à direita do tique: r nas duas regiões, e também a na faixa (E).
+% ficam à direita do tique: r nas duas regiões, -a nas calotas (N) e a na faixa (E).
 \pgfplotsset{
-  EC@ticks@N/.style 2 args={xtick={-#2,-#1,0,#1}, extra x ticks={#2}},
+  EC@ticks@N/.style 2 args={xtick={-#2,0,#1}, extra x ticks={-#1,#2}},
   EC@ticks@E/.style 2 args={xtick={-#2,-#1,0}, extra x ticks={#1,#2}},
 }
 
