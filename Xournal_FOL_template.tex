@@ -16,10 +16,12 @@
 %%%%%%%%%%%%%%%%%%%%%%       Meu Preâmbulo         %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Mesmos comandos do preambulo-FOL.tex. Para o Xournal++ achar o fol.sty,
-% veja a configuração no início do próprio fol.sty.
-\usepackage{fol}
-% \EscalaFiguras{0.6} % descomente para figuras pequenas por padrão (ex.: \aroxy[1]{1}{2}{1} volta ao tamanho cheio)
+\IfFileExists{fol.sty}{\usepackage{fol}}{%
+  \IfFileExists{C:\Users\1534604\Desktop\MEGA\Softwares_sala_de_aula\xournal\Preambulo\fol.sty}%
+    {\usepackage{C:\Users\1534604\Desktop\MEGA\Softwares_sala_de_aula\xournal\Preambulo\fol}}%
+    {\usepackage{/home/fabio/MEGA/IFES/Softwares_sala_de_aula/xournal/Preambulo/fol}}}
+
+\EscalaFiguras{0.6} % descomente para figuras pequenas por padrão (ex.: \aroxy[1]{1}{2}{1} volta ao tamanho cheio)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
