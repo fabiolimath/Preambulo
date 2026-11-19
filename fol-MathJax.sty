@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%     Pacote fol.sty          %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%   Pacote fol-MathJax.sty    %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Uso: \usepackage{fol}
+% Uso: \usepackage{fol-MathJax}, antes do \usepackage{fol-LaTeX}
 %
 % Só macros de modo matemático, escritas para funcionar também no MathJax:
 % o trecho entre "Início do bloco MathJax" e "Fim do bloco MathJax" pode ser
@@ -11,15 +11,15 @@
 % Nesse trecho use apenas \newcommand, \renewcommand, \newenvironment e
 % \definecolor, com no máximo um argumento opcional (o primeiro), e nada de
 % \makeatletter, \DeclareMathOperator, \mathpalette, \raisebox, TikZ etc.
-% O que é só do LaTeX fica depois do fim do bloco.
-% As figuras TikZ ficam em fol-TikZ.sty, e os comandos de texto, no preâmbulo.
+% O que só funciona no LaTeX (figuras TikZ, \Zer, \Zerup e o ajuste fino do
+% \pm) fica em fol-LaTeX.sty, e os comandos de texto, no preâmbulo.
 %
 % No Overleaf, o arquivo na raiz do projeto já basta.
 % No Xournal++, que compila numa pasta temporária, o LaTeX precisa achar
 % este arquivo pela árvore pessoal (TEXMFHOME). Configuração única, com o
 % repositório clonado em ~/Preambulo:
 % Depois disso, um git pull no clone atualiza o Xournal++.
-% O mesmo vale para o fol-TikZ.sty, que fica na mesma pasta.
+% O mesmo vale para o fol-LaTeX.sty, que fica na mesma pasta.
 %
 %   Linux/macOS: 
 % mkdir -p "$(kpsewhich -var-value TEXMFHOME)/tex/latex"
@@ -35,14 +35,14 @@
 % initexmf --register-root="$env:USERPROFILE\texmf"
 % initexmf --update-fndb
 
-% Para testar, kpsewhich fol.sty deve mostrar o caminho do arquivo. Depois, aponte o 
+% Para testar, kpsewhich fol-MathJax.sty deve mostrar o caminho do arquivo. Depois, aponte o 
 % Xournal++ para o Xournal_FOL_template.tex dessa pasta. O MiKTeX mantém um índice dos 
-% arquivos. Um git pull que só altera o fol.sty não exige nada. Se um pull trouxer um 
+% arquivos. Um git pull que só altera os .sty não exige nada. Se um pull trouxer um 
 % arquivo novo que precise ser encontrado, rode initexmf --update-fndb de novo.
 
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{fol}[2026/11/19 Comandos de Fabio Lima]
+\ProvidesPackage{fol-MathJax}[2026/11/19 Macros de Fabio Lima compatíveis com MathJax]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%          Packages           %%%%%%%%%%%%%%%%%%%%%%%
@@ -70,7 +70,7 @@
 % \pm redefinido: "mais ou menos" em que o + não encosta no - (como no \pm
 % original): o - é a linha do \underline, um pouco abaixo do +, e o \vcenter
 % centraliza o conjunto na altura do + e do - à volta. Esta forma do \vcenter
-% é a do MathJax; o LaTeX usa a versão redefinida depois do fim do bloco.
+% é a do MathJax; o fol-LaTeX.sty a redefine para o LaTeX.
 % \Pm é sinônimo, para textos antigos.
 \renewcommand{\pm}{\mathbin{\vcenter{\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu}}}
 \newcommand{\Pm}{\pm}
@@ -168,7 +168,7 @@
 % padrão 0. Ex.: \zer{\cos(2\theta)}   \zer[1]{\frac{x^2}{x^2}}
 % A seta sobe da esquerda para a direita (é o \cancelto do pacote cancel).
 % As versões antigas, em TikZ (seta descendo, cor e tamanho opcionais), são
-% \Zer e \Zerup, no fol-TikZ.sty.
+% \Zer e \Zerup, no fol-LaTeX.sty.
 \newcommand{\zer}[2][0]{\textcolor{red}{\cancelto{\scriptstyle #1}{\textcolor{black}{#2}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -215,11 +215,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%  Fim do bloco MathJax  %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Só LaTeX (não copie para o MathJax): no LaTeX o \vcenter do \pm precisa de
-% um \hbox, e o \mathpalette passa o estilo atual para dentro dele, para que o
-% símbolo encolha em frações pequenas e índices como o + e o - comuns.
-\renewcommand{\pm}{\mathbin{\mathpalette\fol@Pm\relax}}
-\newcommand{\fol@Pm}[2]{\vcenter{\hbox{$#1\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu$}}}
 
 \endinput
