@@ -16,14 +16,14 @@
 %%%%%%%%%%%%%%%%%%%%%%       Meu Preâmbulo         %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Pasta do fol.sty e do fol-TikZ.sty: vazia se o LaTeX já acha os pacotes
+% Pasta do fol-MathJax.sty e do fol-LaTeX.sty: vazia se o LaTeX já acha os pacotes
 % (TEXMFHOME), senão o caminho absoluto do clone, terminado em /
-\IfFileExists{fol.sty}{\def\folDir{}}{%
-  \IfFileExists{C:/Users/1534604/Desktop/IFES/Softwares_sala_de_aula/xournal/Preambulo/fol.sty}%
+\IfFileExists{fol-MathJax.sty}{\def\folDir{}}{%
+  \IfFileExists{C:/Users/1534604/Desktop/IFES/Softwares_sala_de_aula/xournal/Preambulo/fol-MathJax.sty}%
     {\def\folDir{C:/Users/1534604/Desktop/IFES/Softwares_sala_de_aula/xournal/Preambulo/}}%
     {\def\folDir{/home/fabio/MEGA/IFES/Softwares_sala_de_aula/xournal/Preambulo/}}}
-\usepackage{\folDir fol}		% Macros de modo matemático
-\usepackage{\folDir fol-TikZ}	% Figuras TikZ
+\usepackage{\folDir fol-MathJax}	% Macros de modo matemático
+\usepackage{\folDir fol-LaTeX}	% Só LaTeX: \pm ajustado, \Zer, \Zerup e figuras
 
 \EscalaFiguras{0.6} % descomente para figuras pequenas por padrão (ex.: \aroxy[1]{1}{2}{1} volta ao tamanho cheio)
 

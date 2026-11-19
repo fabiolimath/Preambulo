@@ -1,19 +1,31 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%     Pacote fol-TikZ.sty     %%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%    Pacote fol-LaTeX.sty     %%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Uso: \usepackage{fol-TikZ}
+% Uso: \usepackage{fol-LaTeX}, depois do \usepackage{fol-MathJax}
 %
-% Figuras TikZ/pgfplots de Fabio Lima (Aro, Esfera e Cilindro, Cilindro N
-% Cone, Paraboloide N Cone e atalhos por plano). Independe do fol.sty, que
-% guarda só as macros de modo matemático (compatíveis com MathJax).
-% Deve ficar na mesma pasta do fol.sty; a instalação para o Xournal++
-% descrita no cabeçalho do fol.sty vale para os dois.
+% Comandos de Fabio Lima que só funcionam no LaTeX: o \pm redefinido com
+% \mathpalette, \Zer e \Zerup (TikZ) e as figuras TikZ/pgfplots (Aro, Esfera
+% e Cilindro, Cilindro N Cone, Paraboloide N Cone e atalhos por plano).
+% As macros compatíveis com MathJax ficam em fol-MathJax.sty.
+% Deve ficar na mesma pasta do fol-MathJax.sty; a instalação para o Xournal++
+% descrita no cabeçalho dele vale para os dois.
 
 % Dentro deste arquivo @ já é letra: não use \makeatletter/\makeatother.
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{fol-TikZ}[2026/11/19 Figuras TikZ de Fabio Lima]
+\ProvidesPackage{fol-LaTeX}[2026/11/19 Comandos de Fabio Lima só para LaTeX]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%      Mais ou menos     %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% O \pm do fol-MathJax.sty, ajustado para o LaTeX: aqui o \vcenter precisa de
+% um \hbox, e o \mathpalette passa o estilo atual para dentro dele, para que o
+% símbolo encolha em frações pequenas e índices como o + e o - comuns.
+\renewcommand{\pm}{\mathbin{\mathpalette\fol@Pm\relax}}
+\newcommand{\fol@Pm}[2]{\vcenter{\hbox{$#1\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu$}}}
 
 
 % Pacote TikZ, definições e configurações
@@ -30,7 +42,7 @@
 %%%%%%%%%%%%%%%%%%%       Seta para zero (TikZ)      %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Versões TikZ do \zer do fol.sty (que usa \cancelto e só sobe).
+% Versões TikZ do \zer do fol-MathJax.sty (que usa \cancelto e só sobe).
 \RequirePackage{calc}	% \heightof, \widthof
 \RequirePackage{xargs}	% \newcommandx, vários argumentos opcionais
 \newlength{\fol@hght}
