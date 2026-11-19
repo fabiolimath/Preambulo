@@ -26,6 +26,41 @@
 
 \usetikzlibrary{arrows.meta} % <-- necessário para "Stealth"
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%       Seta para zero (TikZ)      %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Versões TikZ do \zer do fol.sty (que usa \cancelto e só sobe).
+\RequirePackage{calc}	% \heightof, \widthof
+\RequirePackage{xargs}	% \newcommandx, vários argumentos opcionais
+\newlength{\fol@hght}
+\newlength{\fol@wdth}
+
+% Seta para baixo atravessando a equação
+% Se nada for passado, a seta é vermelha e aponta para zero
+% No lugar do zero pode passar qq coisa como 1o argumento
+% Ex.: \Zer[1]{equação}   (já em modo matemático)
+% O 2o argumento é a cor. Para usá-la, é necessário passar tbm o 1o argumento
+% Ex.: \Zer[0][blue]{equação}
+% O 3o argumento é o tamanho do texto no target da seta, por padrão \scriptsize
+% O 4o argumento é para fazer ajuste fino na inclinação da seta
+\newcommandx{\Zer}[5][1=0, 2=red, 3=\scriptsize, 4=3ex]{%
+    \setlength{\fol@hght}{\heightof{$#5$}}\setlength{\fol@wdth}{\widthof{$#5$}}%
+    \makebox[0pt][l]{\tikz[baseline]{%
+        % The vertical coordinates are swapped for a negative slope
+        \draw[-latex, #2, thick](0,\fol@hght+#4)--(\fol@wdth,-#4) node[shift={(1.1mm,-.5mm)}]{#3 $#1$};%
+    }}#5%
+}
+
+% Mesma coisa que a anterior, mas apontando para cima.
+\newcommandx{\Zerup}[5][1=0, 2=red, 3=\scriptsize, 4=3ex]{%
+    \setlength{\fol@hght}{\heightof{$#5$}}\setlength{\fol@wdth}{\widthof{$#5$}}%
+    \makebox[0pt][l]{\tikz[baseline]{%
+        % #1 is the target value, #3 is the inclination
+        \draw[-latex, #2, thick](0,-#4)--(\fol@wdth,\fol@hght+#4) node[shift={(1.1mm,.5mm)}]{#3 $#1$};%
+    }}#5%
+}
+
   \tikzset{ Pontilhado/.style={gray!50, dotted, line width=0.5pt} }
   \tikzset{ Tracejado/.style={gray!50, dashed, line width=0.5pt}  }
 

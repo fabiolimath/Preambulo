@@ -11,6 +11,7 @@
 % Nesse trecho use apenas \newcommand, \renewcommand, \newenvironment e
 % \definecolor, com no máximo um argumento opcional (o primeiro), e nada de
 % \makeatletter, \DeclareMathOperator, \mathpalette, \raisebox, TikZ etc.
+% O que é só do LaTeX fica depois do fim do bloco.
 % As figuras TikZ ficam em fol-TikZ.sty, e os comandos de texto, no preâmbulo.
 %
 % No Overleaf, o arquivo na raiz do projeto já basta.
@@ -67,8 +68,10 @@
 \newcommand{\mt}[1]{{\:\mbox{#1}}\:}	% Texto no modo math
 
 % "Mais ou menos" em que o + não encosta no - (como encosta no \pm):
-% o - é a linha do \underline, um pouco abaixo do +
-\newcommand{\Pm}{\mathbin{\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu}}
+% o - é a linha do \underline, um pouco abaixo do +, e o \vcenter centraliza
+% o conjunto na altura do + e do - à volta. Esta forma do \vcenter é a do
+% MathJax; o LaTeX usa a versão redefinida depois do fim do bloco.
+\newcommand{\Pm}{\mathbin{\vcenter{\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu}}}
 
 %%%%%%% Forçar \displaystyle dentro do \frac
  % By Mico at https://tex.stackexchange.com/questions/173899/fractions-with-large-elements
@@ -162,6 +165,8 @@
 % Seta vermelha cortando a expressão e apontando para o valor dela, por
 % padrão 0. Ex.: \zer{\cos(2\theta)}   \zer[1]{\frac{x^2}{x^2}}
 % A seta sobe da esquerda para a direita (é o \cancelto do pacote cancel).
+% As versões antigas, em TikZ (seta descendo, cor e tamanho opcionais), são
+% \Zer e \Zerup, no fol-TikZ.sty.
 \newcommand{\zer}[2][0]{\textcolor{red}{\cancelto{\scriptstyle #1}{\textcolor{black}{#2}}}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -209,5 +214,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%  Fim do bloco MathJax  %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Só LaTeX (não copie para o MathJax): no LaTeX o \vcenter precisa de um
+% \hbox, e o \mathpalette passa o estilo atual para dentro dele, para que o
+% símbolo encolha em frações pequenas e índices como o + e o - comuns.
+\renewcommand{\Pm}{\mathbin{\mathpalette\fol@Pm\relax}}
+\newcommand{\fol@Pm}[2]{\vcenter{\hbox{$#1\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu$}}}
 
 \endinput
