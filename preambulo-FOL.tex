@@ -10,8 +10,35 @@
 \usepackage{multicol}
 \setlength{\columnsep}{2.5em}
 
-%%%% Pacotes e comandos comuns com o template do Xournal++ (fol.sty)
-\usepackage{fol}
+%%%% Pacotes e comandos comuns com o template do Xournal++
+\usepackage{fol}		% Macros de modo matemático (compatíveis com MathJax)
+\usepackage{fol-TikZ}	% Figuras TikZ/pgfplots
+
+%%%% Fontes e Símbolos
+\usepackage{upgreek}		% Letras Gregas mais bacanas - Up Greek
+					    % para utilização desta fonte é preciso colocar na frente no
+					    % comando usual o prefixo up Ex: \upgamma ao inves de \gamma
+					    % \Upalpha ao inves de \Alpha
+
+%%%% Gráficos e tabelas
+\usepackage{graphicx}		% Permite inclusão (e tratamento) de figuras
+% \usepackage{svg} 			% To imput svg graphics
+\usepackage[all]{xy}		% Habilita Diagramas
+\usepackage{xargs}			% Para usar comandos \newcommandx, com argumentos default
+\usepackage{calc}			% Contas com comprimentos (\heightof, \widthof, ...)
+\usepackage{tabularray}		% Tabelas com mais opções (Ex: \tabulinesep=1.2mm % Espaçamento vertical )
+
+%%%% Comandos para modo Texto
+
+% New line  - evita warnings
+\newcommand{\nl}{\par\vspace{\baselineskip}}
+
+% Quadrado "Como queríamos demonstrar", pra ser usado em modo texto
+\newcommand{\cqd}{
+\begin{flushright}
+$\hspace{.3cm}\square\vspace{.7cm}$
+\end{flushright}
+}
 
 
 %_________________________________________________________________________
