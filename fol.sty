@@ -67,11 +67,13 @@
 
 \newcommand{\mt}[1]{{\:\mbox{#1}}\:}	% Texto no modo math
 
-% "Mais ou menos" em que o + não encosta no - (como encosta no \pm):
-% o - é a linha do \underline, um pouco abaixo do +, e o \vcenter centraliza
-% o conjunto na altura do + e do - à volta. Esta forma do \vcenter é a do
-% MathJax; o LaTeX usa a versão redefinida depois do fim do bloco.
-\newcommand{\Pm}{\mathbin{\vcenter{\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu}}}
+% \pm redefinido: "mais ou menos" em que o + não encosta no - (como no \pm
+% original): o - é a linha do \underline, um pouco abaixo do +, e o \vcenter
+% centraliza o conjunto na altura do + e do - à volta. Esta forma do \vcenter
+% é a do MathJax; o LaTeX usa a versão redefinida depois do fim do bloco.
+% \Pm é sinônimo, para textos antigos.
+\renewcommand{\pm}{\mathbin{\vcenter{\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu}}}
+\newcommand{\Pm}{\pm}
 
 %%%%%%% Forçar \displaystyle dentro do \frac
  % By Mico at https://tex.stackexchange.com/questions/173899/fractions-with-large-elements
@@ -183,9 +185,8 @@
 \newcommand{\bbk}{\boldsymbol{\:k}}
 
 
-% Vetor por extenso (sempre em par: \lv 1, 2 \rv)
-\newcommand{\lv}{\left\langle}
-\newcommand{\rv}{\right\rangle}
+% Vetor por extenso. Ex.: \lv{1, 2, 3}
+\newcommand{\lv}[1]{\left\langle #1 \right\rangle}
 
 \newcommand{\vt}[1]{\stackrel{\rightarrow}{#1}}						% Vetor
 \newcommand{\Vt}[1]{\stackrel{\longrightarrow}{#1}}					% Vetor com seta maior, para segmentos.
@@ -215,10 +216,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%  Fim do bloco MathJax  %%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Só LaTeX (não copie para o MathJax): no LaTeX o \vcenter precisa de um
-% \hbox, e o \mathpalette passa o estilo atual para dentro dele, para que o
+% Só LaTeX (não copie para o MathJax): no LaTeX o \vcenter do \pm precisa de
+% um \hbox, e o \mathpalette passa o estilo atual para dentro dele, para que o
 % símbolo encolha em frações pequenas e índices como o + e o - comuns.
-\renewcommand{\Pm}{\mathbin{\mathpalette\fol@Pm\relax}}
+\renewcommand{\pm}{\mathbin{\mathpalette\fol@Pm\relax}}
 \newcommand{\fol@Pm}[2]{\vcenter{\hbox{$#1\mkern1mu\underline{\mkern-1mu+\mkern-1mu}\mkern1mu$}}}
 
 \endinput
