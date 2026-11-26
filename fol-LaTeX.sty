@@ -488,4 +488,279 @@
 \newcommand{\paraboloideNconexz}[2][\fol@escala]{\ParaboloideNcone[#1]{x}{z}{#2}}
 \newcommand{\paraboloideNconeyz}[2][\fol@escala]{\ParaboloideNcone[#1]{y}{z}{#2}}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%     Esfera e Cone     %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Corte, num plano coordenado, da esfera h^2 + v^2 = r^2 e da metade de cima
+% do cone (phi = pi/4): o círculo, as semirretas v = |h|, os pontos de
+% interseção (±c, c), c = r/sqrt(2), e parte de uma região sombreada:
+%   \EsferaEcone : setor dentro da esfera E dentro do cone (acima do cone)
+%   \EsferaNcone : resto do disco, fora do cone (abaixo do cone)
+% O 3º argumento é r^2, como na equação da esfera, para que os rótulos saiam
+% exatos: \EsferaEcone{x}{z}{2}{o} marca sqrt(2) e 1.
+% Uso: \EsferaEcone{eixo horizontal}{eixo vertical}{r^2}{q}
+% q = 1, 2, 3, 4, t, b, d, e (ou l, r), o, como no \EsferaNcilindro.
+% No \EsferaEcone a região fica acima do eixo: só o, t, 1, d, r, 2, e, l.
+
+% Raiz exata para rótulos: \fol@raiz{n}{\macro} guarda em \macro o inteiro
+% sqrt(n), se n for quadrado perfeito, ou \sqrt{n}. n deve ser inteiro.
+\def\fol@raiz#1#2{%
+  \pgfmathtruncatemacro{\fol@rr}{round(sqrt(#1))}%
+  \pgfmathtruncatemacro{\fol@rq}{\fol@rr*\fol@rr}%
+  \ifnum\fol@rq=#1\relax\edef#2{\fol@rr}\else\edef#2{\noexpand\sqrt{#1}}\fi
+}
+
+% Regiões sombreadas. Usam \EK@r (raio) e \EK@c (coordenada das interseções).
+\def\EK@regiao@E{%
+    \path[fill=gray!30, opacity=0.6]                               % Setor de 45° a 135°
+      (axis cs:0,0) -- (axis cs:\EK@c,\EK@c)
+      arc[start angle=45, end angle=135, radius=\EK@r]
+      -- cycle;
+}
+\def\EK@regiao@N{%
+    \path[fill=gray!30, opacity=0.6]                               % Setor de 135° a 405°
+      (axis cs:0,0) -- (axis cs:-\EK@c,\EK@c)
+      arc[start angle=135, end angle=405, radius=\EK@r]
+      -- cycle;
+}
+
+% Comando auxiliar, com a região definida explicitamente
+% #1, #2: eixos (horizontal e vertical)   #3: r^2   #4: região (E ou N)
+% #5, #6, #7, #8: retângulo de recorte do sombreado, em múltiplos de 1.2r:
+%   h de #5 a #6 e v de #7 a #8 (cada um -1, 0 ou 1)
+\newcommand{\EsferaConeAux}[8]{%
+\begin{tikzpicture}[scale=2*\fol@esc]
+  % === Cálculos automáticos ===
+  \pgfmathsetmacro{\EK@r}{sqrt(#3)}                 % raio da esfera
+  \pgfmathsetmacro{\EK@c}{sqrt(#3/2)}               % coordenadas das interseções
+  \fol@raiz{#3}{\EK@rl}                             % rótulos exatos
+  \ifodd#3\relax\def\EK@cl{\sqrt{\frac{#3}{2}}}%
+  \else\pgfmathtruncatemacro{\EK@m}{#3/2}\fol@raiz{\EK@m}{\EK@cl}\fi
+
+  \begin{axis}[
+      xlabel={$#1$}, ylabel={$#2$},
+      axis equal image,                % mantém escala para círculos não ficarem ovalados
+      clip=false,                      % rótulo do cone pode passar da área dos eixos
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+      xmin=-1.2*\EK@r, xmax=1.2*\EK@r, ymin=-1.2*\EK@r, ymax=1.2*\EK@r,
+      xtick={-\EK@r,\EK@c}, xticklabels={$-\EK@rl$,$\EK@cl$}, % r só do lado negativo, longe do nome do eixo
+      x tick label style={anchor=north east},   % abaixo e à esquerda do tique...
+      extra x ticks={-\EK@c}, extra x tick labels={$-\EK@cl$},
+      extra x tick style={x tick label style={anchor=north west}}, % ...-c à direita, longe de -r
+      ytick={\EK@c}, yticklabels={$\EK@cl$},
+      y tick label style={anchor=south east},
+    ]
+
+    % --- Curvas ---
+    \draw[thick, blue] (axis cs:0,0) circle [radius=\EK@r];                     % Círculo de raio r
+    \addplot[thick, red, domain=0:1.2*\EK@r, samples=2] ({x},{x})
+      node[pos=1, above, red] {$#2=|#1|$};                                       % Semirreta v = h
+    \addplot[thick, red, domain=0:1.2*\EK@r, samples=2] ({-x},{x});              % Semirreta v = -h
+
+    % --- Região sombreada, recortada pela parte escolhida (q) ---
+    \begin{scope}
+    \clip (axis cs:{#5*1.2*\EK@r},{#7*1.2*\EK@r}) rectangle (axis cs:{#6*1.2*\EK@r},{#8*1.2*\EK@r});
+    \csname EK@regiao@#4\endcsname
+    \end{scope}
+
+    % --- Linhas tracejadas ---
+    \addplot[Tracejado] coordinates {(-\EK@c,\EK@c) (\EK@c,\EK@c)};
+    \addplot[Tracejado] coordinates {(-\EK@c,0) (-\EK@c,\EK@c)};
+    \addplot[Tracejado] coordinates {(\EK@c,0) (\EK@c,\EK@c)};
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(-\EK@c,\EK@c) (\EK@c,\EK@c) (0,0)};
+
+  \end{axis}
+\end{tikzpicture}%
+}
+
+% Tabela de q -> retângulo de recorte. Cada entrada recebe #1, #2 (eixos), #3 (r^2) e #4 (região).
+\@namedef{EsferaCone@1}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{0}{1}{0}{1}}
+\@namedef{EsferaCone@2}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{0}{0}{1}}
+\@namedef{EsferaCone@3}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{0}{-1}{0}}
+\@namedef{EsferaCone@4}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{0}{1}{-1}{0}}
+\@namedef{EsferaCone@t}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{1}{0}{1}}
+\@namedef{EsferaCone@b}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{1}{-1}{0}}
+\@namedef{EsferaCone@d}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{0}{1}{-1}{1}}
+\@namedef{EsferaCone@e}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{0}{-1}{1}}
+\@namedef{EsferaCone@r}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{0}{1}{-1}{1}}
+\@namedef{EsferaCone@l}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{0}{-1}{1}}
+\@namedef{EsferaCone@o}#1#2#3#4{\EsferaConeAux{#1}{#2}{#3}{#4}{-1}{1}{-1}{1}}
+
+\newcommand{\EsferaNcone}[5][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \@ifundefined{EsferaCone@#5}%
+    {\PackageError{EsferaNcone}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, d, e (ou l, r) ou o.}}%
+    {\@nameuse{EsferaCone@#5}{#2}{#3}{#4}{N}}%
+}
+\newcommand{\EsferaEcone}[5][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \in@{,#5,}{,3,4,b,}%
+  \ifin@\PackageError{EsferaEcone}{q = '#5' invalido}{A regiao fica acima do eixo: use o, t, 1, d, r, 2, e ou l.}%
+  \else
+  \@ifundefined{EsferaCone@#5}%
+    {\PackageError{EsferaEcone}{q = '#5' invalido}{Use o, t, 1, d, r, 2, e ou l.}}%
+    {\@nameuse{EsferaCone@#5}{#2}{#3}{#4}{E}}%
+  \fi
+}
+
+% Esfera e cone com eixos fixados, mais usuais.
+% Recebe #1 = r^2 e #2 = q
+\newcommand{\esferaEconexz}[3][\fol@escala]{\EsferaEcone[#1]{x}{z}{#2}{#3}}
+\newcommand{\esferaEconeyz}[3][\fol@escala]{\EsferaEcone[#1]{y}{z}{#2}{#3}}
+\newcommand{\esferaNconexz}[3][\fol@escala]{\EsferaNcone[#1]{x}{z}{#2}{#3}}
+\newcommand{\esferaNconeyz}[3][\fol@escala]{\EsferaNcone[#1]{y}{z}{#2}{#3}}
+
+% \PlanosEcone{eixo h}{eixo v}{a}{q}: corte dos planos v = ±a e do cone reto
+% (45°), com a região entre os planos e dentro do cone sombreada
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%     Planos E Cone      %%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% O \CilindroNcone "deitado": as retas v = -a e v = a (planos), as retas
+% v = h e v = -h (cone de 45°), os pontos de interseção e parte da região
+% entre os planos e dentro do cone (|h| <= |v| <= a, os dois triângulos em
+% pé, de vértice na origem) sombreada.
+% Uso: \PlanosEcone{eixo horizontal}{eixo vertical}{a}{q}
+% Ex.: \PlanosEcone{y}{z}{2}{e}  % metade da esquerda, no plano yz
+% q = 1, 2, 3, 4, t, b, d, e (ou l, r), o, como no \CilindroNcone.
+
+% Comando auxiliar, com a região definida explicitamente
+% #1, #2: eixos (horizontal e vertical)   #3: altura dos planos (a)
+% #4, #5, #6, #7: retângulo de recorte do sombreado, em múltiplos de 1.3a:
+%   h de #4 a #5 e v de #6 a #7 (cada um -1, 0 ou 1)
+\newcommand{\PlanosEconeAux}[7]{%
+\begin{tikzpicture}[scale=2*\fol@esc]
+  \begin{axis}[
+      xlabel={$#1$}, ylabel={$#2$},
+      axis equal image,             % mantém escala para os 45° ficarem corretos
+      xmin=-1.3*#3, xmax=1.3*#3, ymin=-1.3*#3, ymax=1.3*#3,
+      clip=false,                   % permite que rótulos ultrapassem a área dos eixos
+      xtick={-#3}, ytick={-#3,#3},
+      extra x ticks={#3},           % valor positivo...
+      extra x tick style={x tick label style={anchor=north west}}, % ...abaixo e à direita do tique
+      x tick label style={anchor=north east}, % rótulos abaixo e à esquerda do eixo horizontal
+      y tick label style={anchor=south east}, % rótulos acima e à esquerda do eixo vertical
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+    ]
+
+    % --- Linhas tracejadas ---
+    \addplot[Tracejado] coordinates {(#3,0) (#3,#3)};
+    \addplot[Tracejado] coordinates {(-#3,0) (-#3,-#3)};
+
+    % --- Curvas ---
+    \addplot[thick, blue, domain=-1.2*#3:1.2*#3, samples=2] ({x}, {#3}) node[pos=1, right, blue] {$#2=#3$};    % Reta v = a
+    \addplot[thick, blue, domain=-1.2*#3:1.2*#3, samples=2] ({x}, {-#3}) node[pos=1, right, blue] {$#2=-#3$};  % Reta v = -a
+    \addplot[thick, red, domain=-1.2*#3:1.2*#3, samples=2] {x} node[pos=1, above, red] {$#2=#1$};     % Reta v = h
+    \addplot[thick, red, domain=-1.2*#3:1.2*#3, samples=2] {-x} node[pos=0, above, red] {$#2=-#1$};   % Reta v = -h
+
+    % --- Região sombreada, recortada pela parte escolhida (q) ---
+    \begin{scope}
+    \clip (axis cs:{#4*1.3*#3},{#6*1.3*#3}) rectangle (axis cs:{#5*1.3*#3},{#7*1.3*#3});
+    \path[fill=gray!30, opacity=0.6]                                % Triângulo de cima
+      (axis cs:0,0) -- (axis cs:#3,#3) -- (axis cs:-#3,#3) -- cycle;
+    \path[fill=gray!30, opacity=0.6]                                % Triângulo de baixo
+      (axis cs:0,0) -- (axis cs:#3,-#3) -- (axis cs:-#3,-#3) -- cycle;
+    \end{scope}
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(#3,#3) (-#3,#3) (#3,-#3) (-#3,-#3)};
+
+  \end{axis}
+\end{tikzpicture}%
+}
+
+% Tabela de q -> retângulo de recorte: a mesma do \CilindroNcone.
+\newcommand{\PlanosEcone}[5][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \@ifundefined{CilindroNcone@#5}%
+    {\PackageError{PlanosEcone}{q = '#5' invalido}{Use 1, 2, 3, 4, t, b, d, e (ou l, r) ou o.}}%
+    {\begingroup\let\CilindroNconeAux\PlanosEconeAux\@nameuse{CilindroNcone@#5}{#2}{#3}{#4}\endgroup}%
+}
+
+% Planos E cone com eixos fixados, mais usuais.
+% Recebe #1 = a e #2 = q
+\newcommand{\planosEconexz}[3][\fol@escala]{\PlanosEcone[#1]{x}{z}{#2}{#3}}
+\newcommand{\planosEconeyz}[3][\fol@escala]{\PlanosEcone[#1]{y}{z}{#2}{#3}}
+
+% \ParaboloideEparaboloide{eixo h}{eixo v}{a}{q}: corte dos paraboloides
+% h = v^2 e h = 2a^2 - v^2, de eixo horizontal, com a região entre eles sombreada
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%   Paraboloide E Paraboloide    %%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Corte, num plano que contém o eixo dos paraboloides, de h = v^2 e de
+% h = 2a^2 - v^2: as duas parábolas deitadas, os pontos de interseção
+% (a^2, ±a) e parte da região entre elas sombreada.
+% Ex.: x = y^2 + z^2 e x = 8 - y^2 - z^2 -> \ParaboloideEparaboloide{x}{y}{2}{o}
+% Uso: \ParaboloideEparaboloide{eixo horizontal}{eixo vertical}{a}{q}
+% Como a região fica toda à direita do eixo vertical, q tem só estas opções:
+% q = o, d, r    : a região toda
+% q = t, 1       : a parte de cima
+% q = b, 4       : a parte de baixo
+
+% Comando auxiliar. #1, #2: eixos   #3: a
+% #4, #5: faixa vertical do sombreado, em múltiplos de 1.3a (-1, 0 ou 1)
+\newcommand{\ParaboloideEparaboloideAux}[5]{%
+\begin{tikzpicture}[scale=2*\fol@esc]
+  \pgfmathtruncatemacro{\PP@a}{#3*#3}               % a^2, abscissa das interseções
+  \pgfmathtruncatemacro{\PP@b}{2*#3*#3}             % 2a^2, vértice da segunda parábola
+  \begin{axis}[
+      xlabel={$#1$}, ylabel={$#2$},
+      width=7.3cm, height=7.3cm,       % quadrada, como o \ParaboloideNcone
+      xmin=-0.25*\PP@b, xmax=1.15*\PP@b, ymin=-1.4*#3, ymax=1.4*#3,
+      clip=false,
+      xtick={\PP@a,\PP@b}, ytick={-#3,#3},
+      x tick label style={anchor=north west}, % rótulos abaixo e à direita do tique
+      y tick label style={anchor=south east}, % rótulos acima e à esquerda do tique
+      every axis x label/.style={at={(ticklabel* cs:0.97)}, anchor=north},
+      every axis y label/.style={at={(ticklabel* cs:0.97)}, anchor=east},
+    ]
+
+    % --- Linhas tracejadas ---
+    \addplot[Tracejado] coordinates {(\PP@a,-#3) (\PP@a,#3)};
+    \addplot[Tracejado] coordinates {(0,#3) (\PP@a,#3)};
+    \addplot[Tracejado] coordinates {(0,-#3) (\PP@a,-#3)};
+
+    % --- Curvas ---
+    \addplot[name path=PP@esq, thick, blue, domain=-1.25*#3:1.25*#3, samples=100] ({x^2},{x})
+      node[pos=0, right, blue] {$#1=#2^2$};                                   % h = v^2
+    \addplot[name path=PP@dir, thick, red, domain=-1.25*#3:1.25*#3, samples=100] ({\PP@b-x^2},{x})
+      node[pos=0, below, red] {$#1=\PP@b-#2^2$};                             % h = 2a^2 - v^2
+
+    % --- Região sombreada entre as curvas, na faixa escolhida (q) ---
+    \addplot[gray!30, opacity=0.6] fill between[of=PP@esq and PP@dir, soft clip={domain y=#4*#3:#5*#3}];
+
+    % --- Pontos de interseção ---
+    \addplot[only marks, black!60, mark=*] coordinates {(\PP@a,#3) (\PP@a,-#3) (0,0) (\PP@b,0)};
+
+  \end{axis}
+\end{tikzpicture}%
+}
+
+% Tabela de q -> faixa vertical. Cada entrada recebe #1, #2 (eixos) e #3 (a).
+\@namedef{ParaboloideEparaboloide@o}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{-1}{1}}
+\@namedef{ParaboloideEparaboloide@d}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{-1}{1}}
+\@namedef{ParaboloideEparaboloide@r}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{-1}{1}}
+\@namedef{ParaboloideEparaboloide@t}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{0}{1}}
+\@namedef{ParaboloideEparaboloide@1}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{0}{1}}
+\@namedef{ParaboloideEparaboloide@b}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{-1}{0}}
+\@namedef{ParaboloideEparaboloide@4}#1#2#3{\ParaboloideEparaboloideAux{#1}{#2}{#3}{-1}{0}}
+
+\newcommand{\ParaboloideEparaboloide}[5][\fol@escala]{%
+  \def\fol@esc{#1}%
+  \@ifundefined{ParaboloideEparaboloide@#5}%
+    {\PackageError{ParaboloideEparaboloide}{q = '#5' invalido}{Use o, d, r, t, 1, b ou 4 (2, 3, e, l ficam a esquerda do eixo, onde nao ha regiao).}}%
+    {\@nameuse{ParaboloideEparaboloide@#5}{#2}{#3}{#4}}%
+}
+
+% Paraboloides de eixo x, com eixos fixados. Recebe #1 = a e #2 = q
+\newcommand{\paraboloideEparaboloidexy}[3][\fol@escala]{\ParaboloideEparaboloide[#1]{x}{y}{#2}{#3}}
+\newcommand{\paraboloideEparaboloidexz}[3][\fol@escala]{\ParaboloideEparaboloide[#1]{x}{z}{#2}{#3}}
+
 \endinput
