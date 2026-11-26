@@ -117,8 +117,14 @@
 
 \newcommand{\vazio}{\varnothing}		% Conjunto Vazio (mais bacana e mais usual)
 \newcommand{\menosconj}{\smallsetminus}	% Menos para conjuntos (mais bacana)
-\newcommand{\Leq}{\leqslant}			% Menor ou Igual (mais bacana)
-\newcommand{\Geq}{\geqslant}			% Maior ou Igual (mais bacana)
+% \leq e \geq (e os sinônimos \le e \ge) redefinidos com o traço inclinado.
+% \Leq e \Geq são sinônimos, para textos antigos.
+\renewcommand{\leq}{\leqslant}			% Menor ou Igual (mais bacana)
+\renewcommand{\geq}{\geqslant}			% Maior ou Igual (mais bacana)
+\renewcommand{\le}{\leqslant}
+\renewcommand{\ge}{\geqslant}
+\newcommand{\Leq}{\leq}
+\newcommand{\Geq}{\geq}
 
 \newcommand{\scC}{\mathscr{C}}	% script - C - Conjunto das Funções Contínuas
 \renewcommand{\L}{\mathcal{L}}	% Call   - L - Transformada de Laplace
@@ -190,6 +196,7 @@
 
 \newcommand{\vt}[1]{\stackrel{\rightarrow}{#1}}						% Vetor
 \newcommand{\Vt}[1]{\stackrel{\longrightarrow}{#1}}					% Vetor com seta maior, para segmentos.
+\newcommand{\rt}[2][r]{\vt{#1}\!\!\!_{(#2)}}				% Função vetorial. Ex.: \rt{t} = r(t), \rt[F]{t} = F(t)
 \newcommand{\esc}[2]{\vt{#1}\cdot\vt{#2}}							% Produto Interno ou Escalar
 \newcommand{\vet}[2]{\,\vt{#1} \!\!\times\! \vt{#2}}				% Produto Vetorial
 \newcommand{\abs}[1]{\left\lvert#1\right\rvert}						% Módulo do vetor
